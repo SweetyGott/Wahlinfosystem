@@ -1,0 +1,2 @@
+# Wahlinfosystem
+SE Datenbankprojekt Wahlinformationssystem
