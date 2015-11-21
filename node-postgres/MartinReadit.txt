@@ -1,0 +1,18 @@
+Installation zur Einbindung von NodeJS, AngularJS(HTML), PostgreSQL mit Express
+
+
+1. Installiere NodeJS durch herunterladen v0.12.7
+
+2. npm install -g express-generator@4
+
+3. Gehe in File "node-postgres"
+
+4. npm install
+
+5. Starte Server mit "npm start"
+
+
+
+
+Mehr unter:
+http://mherman.org/blog/2015/02/12/postgresql-and-nodejs/#.VlCHjTZdE-U

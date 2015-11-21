@@ -1,6 +1,0 @@
-*.swp
-*~
-.DS_Store
-blog.md
-node_modules/
-npm-debug.log
