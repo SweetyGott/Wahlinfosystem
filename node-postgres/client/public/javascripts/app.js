@@ -43,7 +43,7 @@ angular.module('nodeTodo', [])
 
 
     // Get all todos
-    $http.get('/api/v1/todos')
+    /*$http.get('/api/v1/todos')
         .success(function(data) {
             $scope.todoData = data;
             console.log(data);
@@ -75,7 +75,7 @@ angular.module('nodeTodo', [])
             .error(function(data) {
                 console.log('Error: ' + data);
             });
-    };
+    };*/
 
 
 

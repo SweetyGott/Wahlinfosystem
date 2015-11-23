@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 
 
-router.post('/api/v1/todos', function(req, res) {
+/*router.post('/api/v1/todos', function(req, res) {
 
     var results = [];
 
@@ -187,7 +187,7 @@ router.get('/api/v1/stimmverteilung', function(req, res) {
 
     });
 
-});
+});*/
 
 
 
