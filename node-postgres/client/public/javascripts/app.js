@@ -171,7 +171,7 @@ angular.module('nodeTodo', ['googlechart'])
                 console.log('Error: ' + error);
             });
     };
-    // $scope.initView();
+    $scope.initView();
 
 
     // Create a new todo
