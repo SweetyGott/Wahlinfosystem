@@ -41,16 +41,19 @@ angular.module('nodeTodo', [])
     $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales", "Tele Sales", "Corporate Sales"];
     $scope.data = [300, 500, 100, 40, 120];
 
+    $scope.initView = function() {
+        // Get all todos
+        $http.get('/api/v1/todos')
+            .success(function(data) {
+                $scope.todoData = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+    $scope.initView();
 
-    // Get all todos
-    $http.get('/api/v1/todos')
-        .success(function(data) {
-            $scope.todoData = data;
-            console.log(data);
-        })
-        .error(function(error) {
-            console.log('Error: ' + error);
-        });
 
     // Create a new todo
     $scope.createTodo = function(todoID) {
