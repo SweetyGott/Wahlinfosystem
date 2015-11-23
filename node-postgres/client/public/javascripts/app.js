@@ -5,6 +5,12 @@ angular.module('nodeTodo', [])
     $scope.formData = {};
     $scope.todoData = {};
 
+    $scope.sitzverteilungData = {};
+
+    $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales", "Tele Sales", "Corporate Sales"];
+    $scope.data = [300, 500, 100, 40, 120];
+
+
     // Get all todos
     $http.get('/api/v1/todos')
         .success(function(data) {
@@ -40,7 +46,25 @@ angular.module('nodeTodo', [])
             });
     };
 
+
+
+
+
+    //GetDistribution
+    /*$scope.getVoteDistribution = function() {
+        $http.get('/api/v1/stimmverteilung')
+            .success(function(data) {
+                $scope.sitzverteilungData = data;
+                console.log(data);
+                return data;
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };*/
+
 });
+
 
 
 
