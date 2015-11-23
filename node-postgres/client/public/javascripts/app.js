@@ -1,8 +1,8 @@
-angular.module('nodeTodo', [])
+angular.module('nodeTodo', ['googlechart'])
 //angular.module('nodeTodo', ['chart.js'])
 //angular.module('nodeTodo', ["googlechart", "googlechart-docs"])
 
-.controller('mainController', function($scope, $http) {
+.controller('MainController', function($scope, $http) {
 
     $scope.formData = {};
     $scope.todoData = {};
@@ -37,6 +37,8 @@ angular.module('nodeTodo', [])
 
 
 
+
+
     //Data AngularChart
     $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales", "Tele Sales", "Corporate Sales"];
     $scope.data = [300, 500, 100, 40, 120];
@@ -52,7 +54,7 @@ angular.module('nodeTodo', [])
                 console.log('Error: ' + error);
             });
     };
-    $scope.initView();
+    // $scope.initView();
 
 
     // Create a new todo
