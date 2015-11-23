@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, './client', 'public')));
 app.use(express.static(path.join(__dirname, './client', 'views')));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname))); // Brauchen wir das?
 
 app.use('/', routes);
 //app.use('/users', users);
