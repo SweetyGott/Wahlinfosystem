@@ -8,6 +8,13 @@ angular.module('nodeTodo', [])
     $scope.todoData = {};
 
     //$scope.sitzverteilungData = {};
+    /*[
+        {"name":"CDU","stimmen":"0.40474430307932882849"},
+        {"name":"CSU","stimmen":"0.08797928534022331969"},
+        {"name":"DIE LINKE","stimmen":"0.10187041310759579387"},
+        {"name":"GRÜNE","stimmen":"0.10019842182054685307"},
+        {"name":"SPD","stimmen":"0.30520757665230520489"}
+    ]*/
 
     //Data GoogleChart
     $scope.chartObject = {};    
