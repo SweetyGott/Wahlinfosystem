@@ -158,9 +158,23 @@ router.delete('/api/v1/todos/:todo_id', function(req, res) {
 
 
 //GetSitzverteilung
-router.get('/api/v1/stimmverteilung', function(req, res) {
+router.get('/api/v1/wahlinfo/:AbfrageID', function(req, res) {
 
     var results = [];
+
+    // Grab data from the URL parameters
+    var id = req.params.AbfrageID;
+
+    var queryString = "";
+    switch( id ) {
+        case "stimmverteilung": 
+            queryString = "select p.name, (lp.total/(select sum(total) from legaleparteien2013)*100)::numeric as stimmen from legaleparteien2013 lp, parteien p where p.id = lp.id order by p.name";
+            break;
+        case "wahlkreise":
+            queryString = "select wk.id, wk.name from wahlkreise wk";
+            break;
+        default: break;
+    }
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
@@ -172,7 +186,7 @@ router.get('/api/v1/stimmverteilung', function(req, res) {
         }
 
         // SQL Query > Select Data
-        var query = client.query("select p.name, (lp.total/(select sum(total) from legaleparteien2013))::numeric as stimmen from legaleparteien2013 lp, parteien p where p.id = lp.id order by p.name");
+        var query = client.query( queryString );
 
         // Stream results back one row at a time
         query.on('row', function(row) {
