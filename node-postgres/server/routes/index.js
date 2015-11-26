@@ -172,7 +172,7 @@ router.get('/api/v1/stimmverteilung', function(req, res) {
         }
 
         // SQL Query > Select Data
-        var query = client.query("select p.name, lp.total/(select sum(total) from legaleparteien2013) as stimmen from legaleparteien2013 lp, parteien p where p.id = lp.id order by p.name");
+        var query = client.query("select p.name, lp.total/(select sum(total) from legaleparteien2013)::numeric as stimmen from legaleparteien2013 lp, parteien p where p.id = lp.id order by p.name");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
