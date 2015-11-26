@@ -100,9 +100,12 @@ angular.module('nodeTodo', ['googlechart'])
             .success(function(data) {
                 console.log(data);
                 var chartData = [];
+                j = 0;
                 for (var i = 0, l = data.length; i < l; i++) {
                     chartData.push({ c: [ { v: data[i].name }, {v: parseFloat(data[i].stimmen)} ] });
+                    j += parseFloat(data[i].stimmen);
                 }
+                chartData.push({ c: [ { v: "H" }, {v: j} ] });
                 $scope.sitzverteilungChart.data.rows = chartData;
             })
             .error(function(data) {
@@ -111,28 +114,6 @@ angular.module('nodeTodo', ['googlechart'])
     };
 
 
-
-
-
-    
-    //Sitzverteilung
-    /*$scope.toGooglePie = function() {
-        //var json = [{"name":"CDU","stimmen":"0.40474430307932882849"},{"name":"CSU","stimmen":"0.08797928534022331969"},{"name":"DIE LINKE","stimmen":"0.10187041310759579387"},{"name":"GRÜNE","stimmen":"0.10019842182054685307"},{"name":"SPD","stimmen":"0.30520757665230520489"}];
-        //$scope.getVoteDistribution();
-        //$scope.sitzverteilungData = $scope.getVoteDistribution();
-        //$scope.sitzverteilungData = [{"name":"CDU","stimmen":"0.40474430307932882849"},{"name":"CSU","stimmen":"0.08797928534022331969"},{"name":"DIE LINKE","stimmen":"0.10187041310759579387"},{"name":"GRÜNE","stimmen":"0.10019842182054685307"},{"name":"SPD","stimmen":"0.30520757665230520489"}];
-        var chartData = [];
-                for (var i = 0, l = data.length; i < l; i++) {
-                    chartData.push({ c: [ { v: data[i].name }, {v: parseFloat(data[i].stimmen)} ] });
-                    console.log( 'yolo: ' + data[i].name + data[i].stimmen);
-                }
-                console.log(data);
-                console.log(chartData);
-                $scope.sitzverteilungData = data;
-                console.log($scope.sitzverteilungData);
-                return $scope.sitzverteilungData;
-    };*/
-
     $scope.sitzverteilungChart = {};
     $scope.sitzverteilungChart.type = "PieChart";
     $scope.sitzverteilungChart.data = {"cols": [
@@ -140,6 +121,10 @@ angular.module('nodeTodo', ['googlechart'])
         {id: "s", label: "Slices", type: "number"}
     ], "rows": $scope.getVoteDistribution() };
     $scope.sitzverteilungChart.options = {
+        pieHole: 0.5,
+        pieStartAngle: -90,
+        pieSliceText: 'value',
+        colors: ['black', 'black', 'purple', 'green', 'red', 'transparent'],
         'title': 'Wahlergebnis'
     };
 
