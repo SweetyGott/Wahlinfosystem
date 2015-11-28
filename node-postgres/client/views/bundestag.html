@@ -1,0 +1,12 @@
+<!--Google Charts-->
+<div google-chart chart="sitzverteilungChart" style="height:600px; width:100%;"></div>
+
+
+<table ng-table="tableParams" class="table" show-filter="true">
+    <tr ng-repeat="bt in bundestag">
+        <td title="'ID'" filter="{ id: 'number'}" sortable="'id'">
+            {{bt.id}}</td>
+        <td title="'Nachname'" filter="{ nachname: 'text'}" sortable="'nachname'">
+            {{bt.nachname}}</td>
+    </tr>
+</table>

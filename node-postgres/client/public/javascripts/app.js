@@ -1,8 +1,10 @@
-angular.module('nodeTodo', ['googlechart', 'ngRoute'])
+angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable'])
 
 .config(function ($routeProvider) {
   $routeProvider.when("/", {
     templateUrl: "uebersicht.html",
+  }).when("/bundestag", {
+    templateUrl: "bundestag.html",
   }).when("/knappsteSieger", {
     templateUrl: "knappsteSieger.html",
   }).otherwise({
@@ -10,7 +12,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute'])
   });
 })
 
-.controller('MainController', function($scope, $http) {
+.controller('MainController', function($scope, $http, ngTableParams) {
 
     $scope.formData = {};
     $scope.todoData = {};
@@ -59,7 +61,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute'])
 
     //GetWahlkreise
     $scope.wahlkreise = {};
-
     $scope.getWahlkreiseNavBar = function() {
         // Get all todos
         $http.get('/api/v1/wahlinfo/wahlkreise')
@@ -72,6 +73,35 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute'])
             });
     };
     $scope.getWahlkreiseNavBar();
+
+
+
+
+
+    //GetBundestag
+    $scope.bundestag = {};
+    
+    $scope.getBundestag = function() {
+        // Get all todos
+        $http.get('/api/v1/wahlinfo/bundestag')
+            .success(function(data) {
+                $scope.bundestag = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+    $scope.getBundestag();
+
+    $scope.tableParams = new ngTableParams({
+        page: 1,
+        count: 10,
+        sorting: {
+            lastRun: 'desc'
+        }
+    },
+    { dataset: bundestag});
 
 
 

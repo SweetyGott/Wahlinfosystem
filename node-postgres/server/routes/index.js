@@ -173,8 +173,12 @@ router.get('/api/v1/wahlinfo/:AbfrageID', function(req, res) {
         case "wahlkreise":
             queryString = "select wk.id, wk.name from wahlkreise wk";
             break;
+        case "bundestag":
+            queryString = "select * from bundestag2013";
+            break;
         default: break;
-    }
+    };
+    console.log("String succesfully parsed: " +  queryString);
 
     // Get a Postgres client from the connection pool
     pg.connect(connectionString, function(err, client, done) {
