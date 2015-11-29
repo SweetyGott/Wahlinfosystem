@@ -1,10 +1,4 @@
-﻿/* question 6
-Stellt die Top 10 der knappsten Sieger fur alle Parteien dar. Die knappsten Sieger ¨
-sind die gew¨ahlten Erstkandidaten, welche mit dem geringsten Vorsprung gegenuber
-ihren Konkurrenten gewonnen haben. Sollte eine Partei keinen Wahlkreis ¨
-gewonnen haben, sollen stattdessen die Wahlkreise ausgegeben werden, in denen
-sie am knappsten verloren hat.
-*/
+﻿CREATE VIEW closest2013 AS (
 
 WITH 
 diff AS 
@@ -36,13 +30,10 @@ closestLosers AS (SELECT a.id as partei_id, a.fkwahlkreis as wk_id, a.idbew as b
 FROM parteien p JOIN diff d ON p.id = d.fkpartei WHERE diff < 0
 ORDER BY p.name, d.diff ASC) a
 WHERE a.closest <= 10)
-
 SELECT p.name, b.vorname,b.nachname, diff FROM 
 (SELECT *, RANK() OVER (PARTITION BY partei_id ORDER BY diff DESC) as n FROM
 (SELECT * FROM closestWinners cw UNION ALL SELECT * FROM closestLosers cl) comb) ranked
 JOIN parteien p ON partei_id = p.id
 JOIN bewerber b ON bew_id = b.id
 WHERE ranked.n <= 10
-ORDER BY p.name
-
-
+ORDER BY p.name);

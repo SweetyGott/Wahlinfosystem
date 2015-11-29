@@ -1,17 +1,17 @@
-﻿--DROP FUNCTION db.schritt01();
+﻿--DROP FUNCTION schritt01();
 --DROP table if exists bundessitze;
 
-CREATE OR REPLACE FUNCTION db.schritt01 (
+CREATE OR REPLACE FUNCTION schritt01 (
 	) RETURNS TABLE (id integer, mandat integer) AS $$
 	BEGIN
 	
 	if to_regclass('bundessitze') is null then
 		create temp table bundessitze as ( select bl.id, bl.name, bl.bevölkerung13, round( bl.bevölkerung13*1.0/
 											((select sum(bl2.bevölkerung13)
-											from db.bundesländer bl2)
+											from bundesländer bl2)
 											/
 											598.0))::integer as mandate
-					from db.bundesländer bl);
+					from bundesländer bl);
 		
 		WHILE ( select sum(bs.mandate) from bundessitze bs ) < 598 LOOP
 			UPDATE bundessitze
@@ -35,6 +35,6 @@ CREATE OR REPLACE FUNCTION db.schritt01 (
 $$ LANGUAGE plpgsql;
 
 select *
-from db.schritt01();
+from schritt01();
 
 

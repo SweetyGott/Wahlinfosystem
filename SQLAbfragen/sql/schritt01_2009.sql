@@ -1,13 +1,15 @@
-﻿--DROP FUNCTION schritt02();
-DROP table if exists parteisitze;
+﻿-- Function: public.schritt01()
 
-CREATE OR REPLACE FUNCTION schritt02 (
-	) RETURNS TABLE (id integer, mandat integer) AS $$
+-- DROP FUNCTION public.schritt01();
+
+CREATE OR REPLACE FUNCTION public.schritt01_2009()
+  RETURNS TABLE(id integer, mandat integer) AS
+$BODY$
 	BEGIN
 	
-	if to_regclass('parteisitze') is null then
-		create temp table parteisitze as ( select bl.id, bl.name, bl.bevölkerung13, round( bl.bevölkerung13*1.0/
-											((select sum(bl2.bevölkerung13)
+	if to_regclass('bundessitze') is null then
+		create temp table bundessitze as ( select bl.id, bl.name, bl.bevölkerung09, round( bl.bevölkerung09*1.0/
+											((select sum(bl2.bevölkerung09)
 											from bundesländer bl2)
 											/
 											598.0))::integer as mandate
@@ -23,7 +25,7 @@ CREATE OR REPLACE FUNCTION schritt02 (
 		WHILE ( select sum(bs.mandate) from bundessitze bs ) > 598 LOOP
 			UPDATE bundessitze
 			SET mandate = mandate - 1
-			WHERE floor(bevölkerung13/(mandate-0.5)) = floor( ( 	select min(bs.bevölkerung13/(mandate+0.5))
+			WHERE floor(bevölkerung09/(mandate-0.5)) = floor( ( 	select min(bs.bevölkerung09/(mandate+0.5))
 										from bundessitze bs));
 		END LOOP;
 
@@ -32,9 +34,9 @@ CREATE OR REPLACE FUNCTION schritt02 (
 
 	return query select ret.id, ret.mandate from bundessitze ret;
 	END;
-$$ LANGUAGE plpgsql;
-
-select *
-from schritt01();
-
-
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION public.schritt01()
+  OWNER TO postgres;
