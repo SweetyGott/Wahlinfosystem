@@ -158,23 +158,31 @@ router.delete('/api/v1/todos/:todo_id', function(req, res) {
 
 
 //GetSitzverteilung
-router.get('/api/v1/wahlinfo/:AbfrageID', function(req, res) {
+router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
 
     var results = [];
 
     // Grab data from the URL parameters
     var id = req.params.AbfrageID;
+    var jahr = req.params.jahr;
+    var param = req.params.param;
 
     var queryString = "";
     switch( id ) {
         case "stimmverteilung": 
-            queryString = "select p.name, (lp.total/(select sum(total) from legaleparteien2013)*100)::numeric as stimmen from legaleparteien2013 lp, parteien p where p.id = lp.id order by p.name";
+            queryString = "SELECT bt.name, count(bt.name) AS count FROM bundestag" + jahr + " bt GROUP BY bt.name ORDER BY bt.name";
             break;
         case "wahlkreise":
             queryString = "select wk.id, wk.name from wahlkreise wk";
             break;
         case "bundestag":
-            queryString = "select * from bundestag2013";
+            queryString = "select * from bundestag" + jahr;
+            break;
+        case "parteien":
+            queryString = "select * from parteien p order by p.name";
+            break;
+        case "knappstesieger":
+            queryString = "select * from knappsteSieger" + jahr + " ks where ks.id =" + param;
             break;
         default: break;
     };
