@@ -90,7 +90,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
 
     /****GET DATA FUNCTIONS****/
     //GetWahlkreise
-    $scope.aktiverWahlkreis = 0;
+    $scope.aktiverWahlkreis = {};
     $scope.wahlkreise = {};
     $scope.getWahlkreise = function() {
         // Get all todos
@@ -103,9 +103,61 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
+
+    //Analyse
+   $scope.wkwahlbeteiligung = 0;
+    $scope.getWahlbeteiligung = function() {
+        $http.get('/api/v1/wahlinfo/wkuebersichtbeteiligung/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
+            .success(function(data) {
+                $scope.wkwahlbeteiligung = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+    $scope.wkdirektmandat = "";
+    $scope.getDirektmandat = function() {
+        $http.get('/api/v1/wahlinfo/wkdirektmandat/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
+            .success(function(data) {
+                $scope.wkdirektmandat = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+    $scope.wkstimmen = {};
+    $scope.getStimmen = function() {
+        $http.get('/api/v1/wahlinfo/wkstimmen/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
+            .success(function(data) {
+                $scope.wkstimmen = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+    $scope.wkdifference = {};
+    $scope.getDifferenz = function() {
+        $http.get('/api/v1/wahlinfo/wkdifference/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
+            .success(function(data) {
+                $scope.wkdifference = data;
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
     $scope.loadaktiverWahlkreis = function( wkid ) {
+        console.log(wkid);
         $scope.aktiverWahlkreis = wkid;
 
+        $scope.getWahlbeteiligung();
+        $scope.getDirektmandat();
+        $scope.getStimmen();
+        $scope.getDifferenz();
     };
 
     //GetParteien

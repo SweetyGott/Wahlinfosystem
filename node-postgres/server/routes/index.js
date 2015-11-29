@@ -184,6 +184,25 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
         case "knappstesieger":
             queryString = "select * from knappsteSieger" + jahr + " ks where ks.id =" + param;
             break;
+        case "wkuebersichtbeteiligung":
+            jahr = jahr.substring(2, 4);
+            queryString = "SELECT id, gewählt" + jahr + "*1.0/wähler" + jahr + " AS Wahlbeteiligung FROM wahlkreise WHERE id = " + param
+            break;
+        case "wkdirektmandat":
+            queryString = "SELECT b.titel, b.vorname, b.nachname, b.jahrgang, p.name FROM direktmandate" + jahr + " dm, bewerber b, parteien p WHERE b.id = dm.idbewerber and p.id = fkpartei and idwahlkreis = " + param;
+            break;
+        case "wkstimmen":
+            var jahrshort = jahr.substring(2, 4);
+            queryString =   "SELECT  p.Name, stimmen AS StimmenAbs, stimmen*1.0/gewählt" + jahrshort + " AS StimmenRel " +
+                            "FROM ergebnissezweit ez JOIN parteien p ON p.id = fkpartei JOIN wahlkreise wk ON wk.id = ez.fkwahlkreis " +
+                            "WHERE jahr = " + jahr + " AND ez.fkwahlkreis = " + param +
+                            " ORDER BY stimmenrel desc";
+            break;
+        case "wkdifference":
+            queryString =   "SELECT p.name, ez1.stimmen-coalesce(ez2.stimmen, 0) AS veraenderungAbs FROM ergebnissezweit ez1 " + 
+                            "LEFT JOIN ergebnissezweit ez2 ON ez1.fkwahlkreis = ez2.fkwahlkreis AND ez1.fkpartei = ez2.fkpartei JOIN parteien p ON p.id = ez1.fkpartei " +
+                            "WHERE ez1.jahr = 2013 AND ez2.jahr = 2009 AND ez1.fkwahlkreis = " + param;
+            break;
         default: break;
     };
     console.log("String succesfully parsed: " +  queryString);

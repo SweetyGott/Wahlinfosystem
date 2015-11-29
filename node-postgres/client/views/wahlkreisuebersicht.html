@@ -1,3 +1,35 @@
 <div class="btn-group btn-group-lg">
-   <button ng-repeat="wk in wahlkreise" ng-click="loadaktiverWahlkreis(wk.id)" type="button" class="btn btn-primary">{{wk.id}}: {{wk.name}}</button>
+   <button ng-repeat="wk in wahlkreise" ng-click="loadaktiverWahlkreis(wk)" type="button" class="btn btn-primary">{{wk.id}}: {{wk.name}}</button>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{aktiverWahlkreis.id}}: {{aktiverWahlkreis.name}}</h3>
+  </div>
+  <div class="panel-body">
+    Wahlbeteiligung bei: {{wkwahlbeteiligung[0].wahlbeteiligung}}<br>
+    Sieger des Wahlkreises: {{wkdirektmandat[0].titel}} {{wkdirektmandat[0].vorname}} {{wkdirektmandat[0].nachname}}, {{wkdirektmandat[0].jahrgang}} - {{wkdirektmandat[0].name}} <br>
+
+    Stimmen der Parteien:
+    <table ng-table="tableParams" class="table" show-filter="true">
+	    <tr ng-repeat="wks in wkstimmen">
+	        <td title="'Partei'" filter="{ partei: 'text'}" sortable="'partei'">
+	            {{wks.name}}</td>
+	        <td title="'Absolute Stimmen'" filter="{ stimmenabs: 'number'}" sortable="'stimmenabs'">
+	            {{wks.stimmenabs}}</td>
+	        <td title="'Relative Stimmen'" filter="{ stimmenrel: 'number'}" sortable="'stimmenrel'">
+	            {{wks.stimmenrel}}</td>
+	    </tr>
+	</table>
+    Vergleich 2013 und 2009:
+	<table ng-table="tableParams" class="table" show-filter="true">
+	    <tr ng-repeat="wkd in wkdifference">
+	        <td title="'Partei'" filter="{ partei: 'text'}" sortable="'partei'">
+	            {{wkd.name}}</td>
+	        <td title="'Absolute Veränderung'" filter="{ changeabs: 'number'}" sortable="'changeabs'">
+	            {{wkd.veraenderungabs}}</td>
+	    </tr>    
+	</table>
+
+  </div>
 </div>
