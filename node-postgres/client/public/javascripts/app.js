@@ -121,7 +121,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 $scope.startKnappsteSieger();
                 break;
             case "justbundestag":
-                $scope.startKnappsteSieger();
+                $scope.startJustBundestag();
                 break;
         }
     };
