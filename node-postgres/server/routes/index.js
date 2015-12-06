@@ -181,7 +181,11 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             queryString = "select * from bundestag" + jahr;
             break;
         case "parteien":
-            queryString = "select * from parteien p order by p.name";
+            //queryString = "select * from parteien p order by p.name";
+            queryString =   "with parties as ( select distinct fkpartei from ergebnissezweit where jahr = " + jahr + " group by fkpartei " +
+                            "union all " + 
+                            "select distinct b.fkpartei from ergebnisseerst ee, bewerber b where ee.fkbewerber = b.id and ee.jahr = " + jahr + " group by fkpartei) " +
+                            "select distinct p.id, p.name from parties p1, parteien p where p.id = p1.fkpartei";
             break;
         case "bundeslaender":
             queryString = "select * from bundesländer";

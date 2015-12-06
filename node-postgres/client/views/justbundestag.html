@@ -1,0 +1,12 @@
+<table ng-table="bundestagtable" class="table table-condensed table-bordered table-striped" show-filter="true">
+    <tr ng-repeat="bt in bundestagdata">
+        <td title="'ID'" filter="{ id: 'text'}" sortable="'id'">
+            {{bt.id}}</td>
+        <td title="'Vorname'" filter="{ vorname: 'text'}" sortable="'vorname'">
+            {{bt.vorname}}</td>
+        <td title="'Nachname'" filter="{ nachname: 'text'}" sortable="'nachname'">
+            {{bt.nachname}}</td>
+        <td title="'Partei'" filter="{ name: 'text'}" sortable="'name'">
+            {{bt.name}}</td>
+    </tr>
+</table>

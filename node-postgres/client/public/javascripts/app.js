@@ -14,6 +14,8 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     templateUrl: "ueberhangmandate.html",
   }).when("/knappsteSieger", {
     templateUrl: "knappsteSieger.html",
+  }).when("/justbundestag", {
+    templateUrl: "justbundestag.html",
   }).otherwise({
     redirectTo: "/"
   });
@@ -26,7 +28,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
 
     //pageStati
     $scope.jahr = 2013;
-    $scope.currentpage = "";
+    $scope.currentpage = "main";
 
     //Bundestag
     $scope.bundestag = [];  
@@ -40,8 +42,8 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     //Wk-Analyse
     $scope.wkwahlbeteiligung = 0;
     $scope.wkdirektmandat = "";
-    $scope.wkstimmen = {};
-    $scope.wkdifference = {};
+    $scope.wkstimmen = [];
+    $scope.wkdifference = [];
 
     //Wahlkreissieger
     $scope.wahlkreissieger= [];
@@ -58,6 +60,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     /**Update On Top Function**/
     $scope.startMain = function() {
         $scope.currentpage = "main";
+        $scope.getVoteDistribution();
     };
     $scope.startBundestag = function() {
         $scope.currentpage = "bundestag";
@@ -82,7 +85,11 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $scope.currentpage = "knappstesieger";
         $scope.loadknappstesieger(65);
         $scope.getParteien();
-    }
+    };
+    $scope.startJustBundestag = function() {
+        $scope.currentpage = "justbundestag";
+        $scope.getBundestag();
+    };
 
     /** Routing Page actualisation**/
     $scope.changeYear = function(year) {
@@ -111,6 +118,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 $scope.startUeberhangmandate();
                 break;
             case "knappstesieger":
+                $scope.startKnappsteSieger();
+                break;
+            case "justbundestag":
                 $scope.startKnappsteSieger();
                 break;
         }
@@ -202,6 +212,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $http.get('/api/v1/wahlinfo/wkstimmen/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
                 $scope.wkstimmen = data;
+                $scope.wkstimmentable.reload();
                 console.log(data);
             })
             .error(function(error) {
@@ -212,6 +223,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $http.get('/api/v1/wahlinfo/wkdifference/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
                 $scope.wkdifference = data;
+                $scope.wkdifferencetable.reload();
                 console.log(data);
             })
             .error(function(error) {
@@ -333,8 +345,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             $scope.bundestagdata = params.filter() ? $filter('filter')($scope.bundestagdata, params.filter()) : $scope.bundestagdata;
             $scope.bundestagdata = $scope.bundestagdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.bundestag);
-        }
 
+            params.total($scope.bundestag.length); 
+        }
     });
 
     //Wahlkreissiegertable
@@ -348,8 +361,39 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             $scope.wahlkreissiegerdata = params.filter() ? $filter('filter')($scope.wahlkreissiegerdata, params.filter()) : $scope.wahlkreissiegerdata;
             $scope.wahlkreissiegerdata = $scope.wahlkreissiegerdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.wahlkreissiegerdata);
-        }
 
+            params.total($scope.wahlkreissieger.length); 
+        }
+    });
+
+    //WkÜbersicht tables
+    $scope.wkstimmentable = new ngTableParams({
+        page: 1,
+        count: 20
+    },{    
+        total: $scope.wkstimmen.length, 
+        getData: function ($defer, params) {
+            $scope.wkstimmendata = params.sorting() ? $filter('orderBy')($scope.wkstimmen, params.orderBy()) : $scope.wkstimmen;
+            $scope.wkstimmendata = params.filter() ? $filter('filter')($scope.wkstimmendata, params.filter()) : $scope.wkstimmendata;
+            $scope.wkstimmendata = $scope.wkstimmendata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            $defer.resolve($scope.wkstimmendata);
+
+            params.total($scope.wkstimmen.length); 
+        }
+    });
+    $scope.wkdifferencetable = new ngTableParams({
+        page: 1,
+        count: 20
+    },{    
+        total: $scope.wkdifference.length, 
+        getData: function ($defer, params) {
+            $scope.wkdifferencedata = params.sorting() ? $filter('orderBy')($scope.wkdifference, params.orderBy()) : $scope.wkdifference;
+            $scope.wkdifferencedata = params.filter() ? $filter('filter')($scope.wkdifferencedata, params.filter()) : $scope.wkdifferencedata;
+            $scope.wkdifferencedata = $scope.wkdifferencedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            $defer.resolve($scope.wkdifferencedata);
+
+            params.total($scope.wkdifference.length); 
+        }
     });
 
     //Ueberhangmandattable
@@ -363,8 +407,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             $scope.ueberhangmandatedata = params.filter() ? $filter('filter')($scope.ueberhangmandatedata, params.filter()) : $scope.ueberhangmandatedata;
             $scope.ueberhangmandatedata = $scope.ueberhangmandatedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.ueberhangmandatedata);
-        }
 
+            params.total($scope.ueberhangmandate.length); 
+        }
     });
 
     //knappstesiegertabletable
@@ -379,7 +424,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             $scope.knappsteSiegerdata = $scope.knappsteSiegerdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.knappsteSiegerdata);
         }
-
     });
 
 
@@ -399,6 +443,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 $scope.startUeberhangmandate();
                 break;
             case "#/knappsteSieger":
+                $scope.startKnappsteSieger();                
+                break;
+            case "#/justbundestag":
                 $scope.startKnappsteSieger();                
                 break;
             default:
