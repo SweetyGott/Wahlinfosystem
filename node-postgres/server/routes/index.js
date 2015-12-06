@@ -187,7 +187,7 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             queryString = "select * from bundesländer";
             break;
         case "knappstesieger":
-            queryString = "select * from knappsteSieger" + jahr + " ks where ks.id =" + param;
+            queryString = "select * from closest" + jahr + " ks where ks.id =" + param;
             break;
         case "wkuebersichtbeteiligung":
             jahr = jahr.substring(2, 4);
@@ -207,6 +207,13 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             queryString =   "SELECT p.name, ez1.stimmen-coalesce(ez2.stimmen, 0) AS veraenderungAbs FROM ergebnissezweit ez1 " + 
                             "LEFT JOIN ergebnissezweit ez2 ON ez1.fkwahlkreis = ez2.fkwahlkreis AND ez1.fkpartei = ez2.fkpartei JOIN parteien p ON p.id = ez1.fkpartei " +
                             "WHERE ez1.jahr = 2013 AND ez2.jahr = 2009 AND ez1.fkwahlkreis = " + param;
+            break;
+        case "ueberhangmandate":
+            queryString =   "SELECT * " +
+                            "FROM ( SELECT s.partei_id, sum(m.greatest-s.sitze) AS Überhangmandate " +
+                            "       FROM minsitzeproland" + jahr + " m JOIN generaterealSitzeProland" + jahr + "() s ON s.bl_id = m.bl_id AND m.partei_id = s.partei_id " +
+                            "       GROUP BY s.partei_id) a " +
+                            "WHERE a.Überhangmandate > 0";
             break;
         default: break;
     };
