@@ -28,37 +28,43 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.bundestag = [];  
 
     //Fuer wkuebersicht
-    $scope.activesBundesland = 0;
+    $scope.aktivesBundesland = 0;
     $scope.bundeslaender = {};
     $scope.aktiverWahlkreis = 0;
     $scope.selectedwahlkreise = {};
+
+    //Wk-Analyse
+    $scope.wkwahlbeteiligung = 0;
+    $scope.wkdirektmandat = "";
+    $scope.wkstimmen = {};
+    $scope.wkdifference = {};
+
+    //knappsteSiegerAnalyse
+    $scope.parteien = {};
+    $scope.aktivePartei = 0; //defaultpartei
+    $scope.knappsteSieger = {};
     
 
-    // Create a new todo
-    $scope.createTodo = function(todoID) {
-        $http.post('/api/v1/todos', $scope.formData)
-            .success(function(data) {
-                $scope.formData = {};
-                $scope.todoData = data;
-                console.log(data);
-            })
-            .error(function(error) {
-                console.log('Error: ' + error);
-            });
+    /**Update On Top Function**/
+    $scope.startMain = function() {
+        $scope.currentpage = "main";
     };
-
-    // Delete a todo
-    $scope.deleteTodo = function(todoID) {
-        $http.delete('/api/v1/todos/' + todoID)
-            .success(function(data) {
-                $scope.todoData = data;
-                console.log(data);
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
+    $scope.startBundestag = function() {
+        $scope.currentpage = "bundestag";
+        $scope.getVoteDistribution();
+        $scope.getBundestag();
     };
-
+    $scope.startKnappsteSieger = function() {
+        $scope.currentpage = "knappstesieger";
+        $scope.loadknappstesieger(65);
+        $scope.getParteien();
+    }
+    $scope.startWahlkreisuebersicht = function() {
+        $scope.currentpage = "wahlkreisuebersicht";
+        $scope.getBundeslaender();
+        $scope.loadSelectedWahlkreise(14);
+        $scope.loadaktiverWahlkreis( { id: 215, name: "Freising"}  );
+    }
 
     /** Routing Page actualisation**/
     $scope.changeYear = function(year) {
@@ -80,25 +86,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         }
     };
 
-    /**Update On Top Function**/
-    $scope.startMain = function() {
-        $scope.currentpage = "main";
-    };
-    $scope.startBundestag = function() {
-        $scope.currentpage = "bundestag";
-        $scope.getVoteDistribution();
-        $scope.getBundestag();
-    };
-    $scope.startKnappsteSieger = function() {
-        $scope.currentpage = "knappstesieger";
-        $scope.getParteien();
-    }
-    $scope.startWahlkreisuebersicht = function() {
-        $scope.currentpage = "wahlkreisuebersicht";
-        $scope.getBundeslaender();
-        //$scope.getWahlkreise();
-    }
-
 
 
     /** ActionFunctions**/
@@ -107,7 +94,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $scope.getSelectedWahlkreise();
     }
     $scope.loadaktiverWahlkreis = function( wkid ) {
-        console.log(wkid);
         $scope.aktiverWahlkreis = wkid;
 
         $scope.getWahlbeteiligung();
@@ -115,6 +101,11 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $scope.getStimmen();
         $scope.getDifferenz();
     };
+
+    $scope.loadknappstesieger = function( parteiid ) {
+        $scope.aktivePartei = parteiid;
+        $scope.getKnappsteSieger();
+    }
 
     /****GET DATA FUNCTIONS****/
     //Get Bundeslaender
@@ -144,7 +135,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     };
 
     //Analyse
-   $scope.wkwahlbeteiligung = 0;
     $scope.getWahlbeteiligung = function() {
         $http.get('/api/v1/wahlinfo/wkuebersichtbeteiligung/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
@@ -155,7 +145,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
-    $scope.wkdirektmandat = "";
     $scope.getDirektmandat = function() {
         $http.get('/api/v1/wahlinfo/wkdirektmandat/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
@@ -166,7 +155,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
-    $scope.wkstimmen = {};
     $scope.getStimmen = function() {
         $http.get('/api/v1/wahlinfo/wkstimmen/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
@@ -177,7 +165,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
-    $scope.wkdifference = {};
     $scope.getDifferenz = function() {
         $http.get('/api/v1/wahlinfo/wkdifference/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
             .success(function(data) {
@@ -192,7 +179,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     
 
     //GetParteien
-    $scope.parteien = {};
+    
     $scope.getParteien = function() {
         // Get all todos
         $http.get('/api/v1/wahlinfo/parteien/' + $scope.jahr + '/0/')
@@ -206,8 +193,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     };
 
     //GetClosestWinner
-    $scope.aktivePartei = 46;
-    $scope.knappsteSieger = {};
     $scope.getKnappsteSieger = function() {
         // Get all todos
         $http.get('/api/v1/wahlinfo/knappstesieger/' + $scope.jahr + '/' + $scope.aktivePartei + '/')
@@ -219,10 +204,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
-    $scope.loadknappstesieger = function( parteiid ) {
-        $scope.aktivePartei = parteiid;
-        $scope.getKnappsteSieger();
-    }
 
 
     //GetBundestag
