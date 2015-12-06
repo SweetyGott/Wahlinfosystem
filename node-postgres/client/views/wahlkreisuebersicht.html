@@ -1,5 +1,10 @@
 <div class="btn-group btn-group-lg">
-   <button ng-repeat="wk in wahlkreise" ng-click="loadaktiverWahlkreis(wk)" type="button" class="btn btn-primary">{{wk.id}}: {{wk.name}}</button>
+   <button ng-repeat="b in bundeslaender" ng-click="loadSelectedWahlkreise(b.id)" type="button" class="btn btn-primary">{{b.name}}</button>
+</div>
+
+
+<div class="btn-group btn-group-lg">
+   <button ng-repeat="wk in selectedwahlkreise" ng-click="loadaktiverWahlkreis(wk)" type="button" class="btn btn-primary">{{wk.id}}: {{wk.name}}</button>
 </div>
 
 <div class="panel panel-default">

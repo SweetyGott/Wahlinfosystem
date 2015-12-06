@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
 
 
 
+/*tbdeleted*/
 router.post('/api/v1/todos', function(req, res) {
 
     var results = [];
@@ -155,6 +156,7 @@ router.delete('/api/v1/todos/:todo_id', function(req, res) {
     });
 
 });
+/* End to be deleted*/
 
 
 //GetSitzverteilung
@@ -173,13 +175,16 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             queryString = "SELECT bt.name, count(bt.name) AS count FROM bundestag" + jahr + " bt GROUP BY bt.name ORDER BY bt.name";
             break;
         case "wahlkreise":
-            queryString = "select wk.id, wk.name from wahlkreise wk";
+            queryString = "select wk.id, wk.name from wahlkreise wk where wk.fkbundesland = " + param;
             break;
         case "bundestag":
             queryString = "select * from bundestag" + jahr;
             break;
         case "parteien":
             queryString = "select * from parteien p order by p.name";
+            break;
+        case "bundeslaender":
+            queryString = "select * from bundesländer";
             break;
         case "knappstesieger":
             queryString = "select * from knappsteSieger" + jahr + " ks where ks.id =" + param;
