@@ -1,0 +1,14 @@
+<table ng-table="wahlkreissiegertable" class="table table-condensed table-bordered table-striped" show-filter="true">
+    <tr ng-repeat="ws in wahlkreissiegerdata">
+        <td title="'ID'" filter="{ id: 'text'}" sortable="'id'">
+            {{ws.id}}</td>
+        <td title="'Wahlkreis'" filter="{ name: 'text'}" sortable="'name'">
+            {{ws.name}}</td>
+        <td title="'Erstimmensieger'" filter="{ erst: 'text'}" sortable="'erst'">
+            {{ws.erst}}</td>
+        <td title="'Zweitstimmensieger'" filter="{ zweit: 'text'}" sortable="'zweit'">
+            {{ws.zweit}}</td>
+        <td title="'Bundesland'" filter="{ bname: 'text'}" sortable="'bname'">
+            {{ws.bname}}</td>
+    </tr>
+</table>

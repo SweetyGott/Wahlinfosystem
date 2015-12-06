@@ -1,12 +1,14 @@
-﻿-- wahlkreissieger
-WITH relWK AS (SELECT * FROM ergebnissezweit ez 
-JOIN parteien p ON ez.fkpartei = p.id
-WHERE ez.fkwahlkreis = ?? and ez.jahr = 2013 )
-
-
-SELECT p.name as ParteiErst, relWK.name as ParteiZweit FROM relWK
-
-LEFT JOIN direktmandate2013 dm ON relWK.fkwahlkreis = dm.idwahlkreis
-JOIN parteien p ON dm.idpartei = p.id
-
-WHERE relWK.stimmen = (SELECT max(sub.stimmen) FROM relWK sub)
+﻿CREATE OR REPLACE VIEW wahlkreissieger2009 as (
+With reszweit as (select p.name, fkwahlkreis
+from ergebnissezweit ez, parteien p
+where 	ez.jahr = 2009 and
+	ez.fkpartei = p.id and ez.stimmen = (
+					select max(sub.stimmen)
+					from ergebnissezweit sub
+					where ez.fkwahlkreis = sub.fkwahlkreis and ez.jahr = sub.jahr
+					)
+group by p.name, fkwahlkreis )
+select wk.id, wk.name, p.name as erst, res.name  as zweit, b.name as bname
+from direktmandate2009 dm, parteien p, wahlkreise wk, reszweit res, bundesländer b
+where dm.idpartei = p.id and dm.idwahlkreis = wk.id and res.fkwahlkreis = wk.id and wk.fkbundesland = b.id
+)

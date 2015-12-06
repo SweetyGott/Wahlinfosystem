@@ -215,6 +215,9 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
                             "       GROUP BY s.partei_id, p.id) a " +
                             "WHERE a.ueberhangmandate > 0";
             break;
+        case "wahlkreissieger":
+            queryString =   "select * from wahlkreissieger" + jahr;
+            break;
         default: break;
     };
     console.log("String succesfully parsed: " +  queryString);

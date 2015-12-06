@@ -43,6 +43,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.wkstimmen = {};
     $scope.wkdifference = {};
 
+    //Wahlkreissieger
+    $scope.wahlkreissieger= [];
+
     //Überhangmandate
     $scope.ueberhangmandate = [];
 
@@ -69,7 +72,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     };
     $scope.startWahlkreissieger = function() {
         $scope.currentpage = "wahlkreissieger";
-        //tbd
+        $scope.getwahlkreissieger();
     };
     $scope.startUeberhangmandate = function() {
         $scope.currentpage = "ueberhangmandate";
@@ -210,6 +213,20 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             });
     };
 
+    //Q4
+    //getwahlkreissieger
+    $scope.getwahlkreissieger = function() {
+        $http.get('/api/v1/wahlinfo/wahlkreissieger/' + $scope.jahr + '/0/')
+            .success(function(data) {
+                $scope.wahlkreissieger = data;
+                $scope.wahlkreissiegertable.reload();
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
 
     //Q5
     //Überhangmandate
@@ -310,6 +327,21 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             $scope.bundestagdata = params.filter() ? $filter('filter')($scope.bundestagdata, params.filter()) : $scope.bundestagdata;
             $scope.bundestagdata = $scope.bundestagdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.bundestag);
+        }
+
+    });
+
+    //Wahlkreissiegertable
+    $scope.wahlkreissiegertable = new ngTableParams({
+        page: 1,
+        count: 20
+    },{    
+        total: $scope.wahlkreissieger.length, 
+        getData: function ($defer, params) {
+            $scope.wahlkreissiegerdata = params.sorting() ? $filter('orderBy')($scope.wahlkreissieger, params.orderBy()) : $scope.wahlkreissieger;
+            $scope.wahlkreissiegerdata = params.filter() ? $filter('filter')($scope.wahlkreissiegerdata, params.filter()) : $scope.wahlkreissiegerdata;
+            $scope.wahlkreissiegerdata = $scope.wahlkreissiegerdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            $defer.resolve($scope.wahlkreissiegerdata);
         }
 
     });
