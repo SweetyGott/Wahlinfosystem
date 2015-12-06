@@ -32,22 +32,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.bundeslaender = {};
     $scope.aktiverWahlkreis = 0;
     $scope.selectedwahlkreise = {};
-
-
-    $scope.initView = function() {
-        // Get all todos
-        $http.get('/api/v1/todos')
-            .success(function(data) {
-                $scope.todoData = data;
-                console.log(data);
-            })
-            .error(function(error) {
-                console.log('Error: ' + error);
-            });
-    };
-    $scope.initView();
-    //console.log($route.current.templateUrl);
-    console.log($route);
+    
 
     // Create a new todo
     $scope.createTodo = function(todoID) {
@@ -120,9 +105,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.loadSelectedWahlkreise = function( bid ) {
         $scope.aktivesBundesland = bid;
         $scope.getSelectedWahlkreise();
-
     }
-
     $scope.loadaktiverWahlkreis = function( wkid ) {
         console.log(wkid);
         $scope.aktiverWahlkreis = wkid;
@@ -132,11 +115,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $scope.getStimmen();
         $scope.getDifferenz();
     };
-
-
-
-
-
 
     /****GET DATA FUNCTIONS****/
     //Get Bundeslaender
@@ -317,6 +295,29 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         }
 
     });
+
+
+    //Init View
+    $scope.initView = function() {
+        switch( window.location.hash ) {
+            case "#/bundestag":
+                $scope.startBundestag();
+                break;
+            case "#/knappsteSieger":
+                $scope.startKnappsteSieger();                
+                break;
+            case "#/wahlkreisuebersicht":
+                $scope.startWahlkreisuebersicht();
+                break;
+            default:
+                $scope.startMain();
+                break;
+        }
+    };
+    $scope.initView();
+
+
+
 
 });
 
