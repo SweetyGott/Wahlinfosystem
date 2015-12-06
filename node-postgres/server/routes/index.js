@@ -210,10 +210,10 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             break;
         case "ueberhangmandate":
             queryString =   "SELECT * " +
-                            "FROM ( SELECT s.partei_id, sum(m.greatest-s.sitze) AS Überhangmandate " +
-                            "       FROM minsitzeproland" + jahr + " m JOIN generaterealSitzeProland" + jahr + "() s ON s.bl_id = m.bl_id AND m.partei_id = s.partei_id " +
-                            "       GROUP BY s.partei_id) a " +
-                            "WHERE a.Überhangmandate > 0";
+                            "FROM ( SELECT s.partei_id, p.name, sum(m.greatest-s.sitze) AS ueberhangmandate " +
+                            "       FROM minsitzeproland" + jahr + " m JOIN generaterealSitzeProland" + jahr + "() s ON s.bl_id = m.bl_id AND m.partei_id = s.partei_id JOIN parteien p ON p.id = s.partei_id" +
+                            "       GROUP BY s.partei_id, p.id) a " +
+                            "WHERE a.ueberhangmandate > 0";
             break;
         default: break;
     };

@@ -1,0 +1,8 @@
+<table ng-table="ueberhangmandattable" class="table table-condensed table-bordered table-striped" show-filter="true">
+    <tr ng-repeat="um in ueberhangmandatedata">
+        <td title="'Partei'" filter="{ name: 'text'}" sortable="'name'">
+            {{um.name}}</td>
+        <td title="'Überhangmandate'" filter="{ ueberhangmandate: 'text'}" sortable="'ueberhangmandate'">
+            {{um.ueberhangmandate}}</td>
+    </tr>
+</table>

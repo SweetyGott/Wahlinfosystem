@@ -6,10 +6,14 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
   }).when("/bundestag", {
     name: "bundestag",
     templateUrl: "bundestag.html",
-  }).when("/knappsteSieger", {
-    templateUrl: "knappsteSieger.html",
   }).when("/wahlkreisuebersicht", {
     templateUrl: "wahlkreisuebersicht.html",
+  }).when("/wahlkreissieger", {
+    templateUrl: "wahlkreissieger.html",
+  }).when("/ueberhangmandate", {
+    templateUrl: "ueberhangmandate.html",
+  }).when("/knappsteSieger", {
+    templateUrl: "knappsteSieger.html",
   }).otherwise({
     redirectTo: "/"
   });
@@ -39,10 +43,13 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.wkstimmen = {};
     $scope.wkdifference = {};
 
+    //Überhangmandate
+    $scope.ueberhangmandate = [];
+
     //knappsteSiegerAnalyse
     $scope.parteien = {};
     $scope.aktivePartei = 0; //defaultpartei
-    $scope.knappsteSieger = {};
+    $scope.knappsteSieger = [];
     
 
     /**Update On Top Function**/
@@ -54,16 +61,24 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         $scope.getVoteDistribution();
         $scope.getBundestag();
     };
-    $scope.startKnappsteSieger = function() {
-        $scope.currentpage = "knappstesieger";
-        $scope.loadknappstesieger(65);
-        $scope.getParteien();
-    }
     $scope.startWahlkreisuebersicht = function() {
         $scope.currentpage = "wahlkreisuebersicht";
         $scope.getBundeslaender();
         $scope.loadSelectedWahlkreise(14);
         $scope.loadaktiverWahlkreis( { id: 215, name: "Freising"}  );
+    };
+    $scope.startWahlkreissieger = function() {
+        $scope.currentpage = "wahlkreissieger";
+        //tbd
+    };
+    $scope.startUeberhangmandate = function() {
+        $scope.currentpage = "ueberhangmandate";
+        $scope.getUeberhangmandate();
+    };
+    $scope.startKnappsteSieger = function() {
+        $scope.currentpage = "knappstesieger";
+        $scope.loadknappstesieger(65);
+        $scope.getParteien();
     }
 
     /** Routing Page actualisation**/
@@ -77,11 +92,17 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             case "bundestag":
                 $scope.startBundestag();
                 break;
-            case "knappstesieger":
-                $scope.startKnappsteSieger();
-                break;
             case "wahlkreisuebersicht":
                 $scope.startWahlkreisuebersicht();
+                break;
+            case "wahlkreissieger":
+                $scope.startWahlkreissieger();
+                break; 
+            case "ueberhangmandate":
+                $scope.startUeberhangmandate();
+                break;
+            case "knappstesieger":
+                $scope.startKnappsteSieger();
                 break;
         }
     };
@@ -108,12 +129,36 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     }
 
     /****GET DATA FUNCTIONS****/
-    //Get Bundeslaender
-    $scope.getBundeslaender = function() {
-        // Get all todos
-        $http.get('/api/v1/wahlinfo/bundeslaender/0/0/')
+    //Q1
+    //GetPieChart
+    $scope.getVoteDistribution = function() {
+        $http.get('/api/v1/wahlinfo/stimmverteilung/' + $scope.jahr + '/0/')
             .success(function(data) {
-                $scope.bundeslaender = data;
+                console.log(data);
+                var chartData = [];
+                j = 0;
+                for (var i = 0, l = data.length; i < l; i++) {
+                    chartData.push({ c: [ { v: data[i].name }, {v: (parseInt(data[i].count))} ] });
+                    j += parseFloat(data[i].stimmen);
+                }
+                chartData.push({ c: [ { v: "" }, {v: j} ] });
+                $scope.sitzverteilungChart.data.rows = chartData;
+                $scope.sitzverteilungChart.options.title = 'Wahlergebnis ' + $scope.jahr + ':';
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
+    //Q2
+    //GetBundestag
+    $scope.getBundestag = function() {
+        // Get all todos
+        $http.get('/api/v1/wahlinfo/bundestag/' + $scope.jahr + '/0/')
+            .success(function(data) {
+                $scope.bundestag = data;
+                $scope.bundestagtable.reload();
+
                 console.log(data);
             })
             .error(function(error) {
@@ -121,19 +166,8 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             });
     };
 
-    //GetSelectedWahlkreise
-    $scope.getSelectedWahlkreise = function() {
-        // Get all todos
-        $http.get('/api/v1/wahlinfo/wahlkreise/' + $scope.jahr + '/' + $scope.aktivesBundesland + '/')
-            .success(function(data) {
-                $scope.selectedwahlkreise = data;
-                console.log(data);
-            })
-            .error(function(error) {
-                console.log('Error: ' + error);
-            });
-    };
 
+    //Q3
     //Analyse
     $scope.getWahlbeteiligung = function() {
         $http.get('/api/v1/wahlinfo/wkuebersichtbeteiligung/' + $scope.jahr + '/' + $scope.aktiverWahlkreis.id + '/')
@@ -176,10 +210,40 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             });
     };
 
-    
 
+    //Q5
+    //Überhangmandate
+    $scope.getUeberhangmandate = function() {
+        $http.get('/api/v1/wahlinfo/ueberhangmandate/' + $scope.jahr + '/0/')
+            .success(function(data) {
+                $scope.ueberhangmandate = data;
+                $scope.ueberhangmandattable.reload();
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
+    //Q6
+    //GetClosestWinner
+    $scope.getKnappsteSieger = function() {
+        // Get all todos
+        $http.get('/api/v1/wahlinfo/knappstesieger/' + $scope.jahr + '/' + $scope.aktivePartei + '/')
+            .success(function(data) {
+                $scope.knappsteSieger = data;
+                $scope.knappstesiegertable.reload();
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
+
+
+    //GENERAL GETTER
     //GetParteien
-    
     $scope.getParteien = function() {
         // Get all todos
         $http.get('/api/v1/wahlinfo/parteien/' + $scope.jahr + '/0/')
@@ -191,13 +255,12 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log('Error: ' + error);
             });
     };
-
-    //GetClosestWinner
-    $scope.getKnappsteSieger = function() {
+    //Get Bundeslaender
+    $scope.getBundeslaender = function() {
         // Get all todos
-        $http.get('/api/v1/wahlinfo/knappstesieger/' + $scope.jahr + '/' + $scope.aktivePartei + '/')
+        $http.get('/api/v1/wahlinfo/bundeslaender/0/0/')
             .success(function(data) {
-                $scope.knappsteSieger = data;
+                $scope.bundeslaender = data;
                 console.log(data);
             })
             .error(function(error) {
@@ -205,44 +268,18 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             });
     };
 
-
-    //GetBundestag
-    $scope.getBundestag = function() {
+    //GetSelectedWahlkreise
+    $scope.getSelectedWahlkreise = function() {
         // Get all todos
-        $http.get('/api/v1/wahlinfo/bundestag/' + $scope.jahr + '/0/')
+        $http.get('/api/v1/wahlinfo/wahlkreise/' + $scope.jahr + '/' + $scope.aktivesBundesland + '/')
             .success(function(data) {
-                $scope.bundestag = data;
-                $scope.bundestagtable.reload();
-
+                $scope.selectedwahlkreise = data;
                 console.log(data);
             })
             .error(function(error) {
                 console.log('Error: ' + error);
             });
     };
-
-
-
-    //GetPieChart
-    $scope.getVoteDistribution = function() {
-        $http.get('/api/v1/wahlinfo/stimmverteilung/' + $scope.jahr + '/0/')
-            .success(function(data) {
-                console.log(data);
-                var chartData = [];
-                j = 0;
-                for (var i = 0, l = data.length; i < l; i++) {
-                    chartData.push({ c: [ { v: data[i].name }, {v: (parseInt(data[i].count))} ] });
-                    j += parseFloat(data[i].stimmen);
-                }
-                chartData.push({ c: [ { v: "" }, {v: j} ] });
-                $scope.sitzverteilungChart.data.rows = chartData;
-                $scope.sitzverteilungChart.options.title = 'Wahlergebnis ' + $scope.jahr + ':';
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
-    };
-
 
 
 
@@ -262,7 +299,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     };
 
 
-
+    //Bundestagtable
     $scope.bundestagtable = new ngTableParams({
         page: 1,
         count: 20
@@ -277,6 +314,36 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
 
     });
 
+    //Ueberhangmandattable
+    $scope.ueberhangmandattable = new ngTableParams({
+        page: 1,
+        count: 20
+    },{    
+        total: $scope.ueberhangmandate.length, 
+        getData: function ($defer, params) {
+            $scope.ueberhangmandatedata = params.sorting() ? $filter('orderBy')($scope.ueberhangmandate, params.orderBy()) : $scope.ueberhangmandate;
+            $scope.ueberhangmandatedata = params.filter() ? $filter('filter')($scope.ueberhangmandatedata, params.filter()) : $scope.ueberhangmandatedata;
+            $scope.ueberhangmandatedata = $scope.ueberhangmandatedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            $defer.resolve($scope.ueberhangmandatedata);
+        }
+
+    });
+
+    //knappstesiegertabletable
+    $scope.knappstesiegertable = new ngTableParams({
+        page: 1,
+        count: 20
+    },{    
+        total: $scope.knappsteSieger.length, 
+        getData: function ($defer, params) {
+            $scope.knappsteSiegerdata = params.sorting() ? $filter('orderBy')($scope.knappsteSieger, params.orderBy()) : $scope.knappsteSieger;
+            $scope.knappsteSiegerdata = params.filter() ? $filter('filter')($scope.knappsteSiegerdata, params.filter()) : $scope.knappsteSiegerdata;
+            $scope.knappsteSiegerdata = $scope.knappsteSiegerdata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            $defer.resolve($scope.knappsteSiegerdata);
+        }
+
+    });
+
 
     //Init View
     $scope.initView = function() {
@@ -284,11 +351,17 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
             case "#/bundestag":
                 $scope.startBundestag();
                 break;
-            case "#/knappsteSieger":
-                $scope.startKnappsteSieger();                
-                break;
             case "#/wahlkreisuebersicht":
                 $scope.startWahlkreisuebersicht();
+                break;
+            case "#/wahlkreissieger":
+                $scope.startWahlkreissieger();
+                break;
+            case "#/ueberhangmandate":
+                $scope.startUeberhangmandate();
+                break;
+            case "#/knappsteSieger":
+                $scope.startKnappsteSieger();                
                 break;
             default:
                 $scope.startMain();
@@ -296,9 +369,6 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         }
     };
     $scope.initView();
-
-
-
 
 });
 
