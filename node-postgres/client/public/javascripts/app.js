@@ -87,6 +87,12 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     /** Routing Page actualisation**/
     $scope.changeYear = function(year) {
         $scope.jahr = year;
+        
+        if( $scope.jahr == 2013) {
+            $scope.sitzverteilungChart.options.colors = ['black', 'black', 'purple', 'green', 'red'];
+        } else {
+            $scope.sitzverteilungChart.options.colors = ['black', 'black', 'purple', 'yellow', 'green', 'red'];
+        }
 
         switch( $scope.currentpage ) {
             case "main":
@@ -311,7 +317,7 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
         pieHole: 0.4,
         pieStartAngle: -90,
         pieSliceText: 'value',
-        colors: ['black', 'black', 'purple', 'green', 'red', 'transparent'],
+        colors: ['black', 'black', 'purple', 'green', 'red'],
         'title': 'Wahlergebnis ' + $scope.jahr + ':'
     };
 
