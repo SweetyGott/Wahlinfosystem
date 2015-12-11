@@ -26,6 +26,7 @@
 				<tr ng-repeat="k1 in kandidatenerst">
 					<td><input type="radio" ng-model="vote.erst" name="erst" ng-value="{{k1.id}}"/>{{k1.titel}} {{k1.vorname}} {{k1.nachname}} {{k1.jahrgang}} {{k1.name}}</td>
 				</tr>
+				<tr><td><input type="radio" ng-model="vote.erst" name="erst" ng-value="-2"/>Ungültig</td></tr>
 			</table>
 		</div>
 		<div class="col-md-6">
@@ -33,6 +34,7 @@
 				<tr ng-repeat="k2 in kandidatenzweit">
 					<td><input type="radio" ng-model="vote.zweit" name="zweit" ng-value="{{k2.id}}"/>{{k2.name}}</td>
 				</tr>
+				<tr><td><input type="radio" ng-model="vote.zweit" name="zweit" ng-value="-2"/>Ungültig</td></tr>
 			</table>
 		</div>
 	</div>
