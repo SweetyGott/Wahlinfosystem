@@ -1,5 +1,13 @@
-<div class="btn-group btn-group-lg">
-   <button ng-repeat="p in parteien" ng-class="{ active: aktivePartei == p.id }" ng-click="loadknappstesieger(p.id)" type="button" class="btn btn-primary">{{p.name}}</button>
+<div class="btn-toolbar" role="toolbar">
+	<div class="btn-group" role="group" ng-repeat="p in parteien">
+		<button  
+	   			ng-class="{ active: aktivePartei == p.id }" 
+	   			ng-click="loadknappstesieger(p.id)" 
+	   			type="button" 
+	   			class="btn btn-primary">
+	   		{{p.name}}
+	   	</button>
+	</div>
 </div>
 
 <table ng-table="knappstesiegertable" class="table" show-filter="true">

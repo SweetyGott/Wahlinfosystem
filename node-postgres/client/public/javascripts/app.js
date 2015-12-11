@@ -16,15 +16,14 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     templateUrl: "knappsteSieger.html",
   }).when("/justbundestag", {
     templateUrl: "justbundestag.html",
+  }).when("/vote", {
+    templateUrl: "vote.html",
   }).otherwise({
     redirectTo: "/"
   });
 })
 
 .controller('MainController', function($scope, $filter, $http, $route, ngTableParams) {
-
-    $scope.formData = {};
-    $scope.todoData = {};
 
     //pageStati
     $scope.jahr = 2013;
@@ -55,6 +54,16 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.parteien = {};
     $scope.aktivePartei = 0; //defaultpartei
     $scope.knappsteSieger = [];
+
+    //Wahldaten
+    $scope.authkey = {};
+    $scope.kandidatenerst = {};
+    $scope.kandidatenzweit = {};
+    $scope.vote = {};
+    $scope.vote.erst = -1;
+    $scope.vote.zweit = -1;
+
+    $scope.votestatus = 0;
     
 
     /**Update On Top Function**/
@@ -89,6 +98,10 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.startJustBundestag = function() {
         $scope.currentpage = "justbundestag";
         $scope.getBundestag();
+    };
+    $scope.startVote = function() {
+        $scope.currentpage = "vote";
+        //tbd
     };
 
     /** Routing Page actualisation**/
@@ -427,6 +440,90 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     });
 
 
+
+
+    /*************************** START VOTING FEATURES ********************************/
+    
+    /**
+    * Überprüft, ob stimme valide, und setzt in dem Fall ein neues Stimmobject, aber ohne zugewiesene Werte
+    * 
+    **/
+    $scope.voteLogin = function() {
+        console.log("Passworteingabe");
+        console.log( $scope.authkey.text );
+
+        $http.get('/api/v1/vote/login/' + $scope.authkey.text + '/')
+            .success(function(data) {
+                //Handle Success of Login ;-)
+                console.log(data);
+                //$scope.test = data;
+                //console.log( $scope.test[0].used);
+                if (data.length != 1) {
+                    $scope.votestatus = 3;
+                } else if( data[0].used == false ) {
+                    $scope.votestatus = 2;
+                    $scope.authkey.wk = data[0].wk_id;
+                    $scope.getKandidaten();
+                } else if ( data[0].used == true ) {
+                    $scope.votestatus = 1;
+                }
+            })
+            .error(function(error) {
+                $scope.votestatus = 3;
+                console.log('Error: ' + error);
+            });
+    };
+
+    $scope.getKandidaten = function() {
+        $http.get('/api/v1/vote/geterst/' + $scope.authkey.wk + '/')
+            .success(function(data) {
+                console.log(data);
+                $scope.kandidatenerst = data;
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+        $http.get('/api/v1/vote/getzweit/' + $scope.authkey.wk + '/')
+            .success(function(data) {
+                console.log(data);
+                $scope.kandidatenzweit = data;
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
+
+
+    $scope.giveVote = function() {
+        console.log($scope.vote.erst);
+        console.log($scope.vote.zweit);
+        $http.post('/api/v1/vote/giveVote/' + $scope.authkey.text + '/' + $scope.vote.erst + '/' + $scope.vote.zweit + '/')
+            .success(function(data) {
+                console.log(data);
+                if( data[0].insertstimme == true ) {
+                    $scope.votestatus = 4;
+                } else {
+                    $scope.votestatus = 1;
+                }
+            })
+            .error(function(error) {
+                console.log('Error: ' + error);
+            });
+    };
+
+
+
+    //In Case of failed authentication
+    $scope.backtoLogin = function() {
+        $scope.authkey.text = "";
+        $scope.votestatus = 0;
+    };
+
+
+
+
+    /*************************** START FENSTER ********************************/
     //Init View
     $scope.initView = function() {
         switch( window.location.hash ) {
@@ -447,6 +544,9 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 break;
             case "#/justbundestag":
                 $scope.startJustBundestag();                
+                break;
+            case "#/vote":
+                $scope.startVote();                
                 break;
             default:
                 $scope.startMain();

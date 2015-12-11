@@ -25,8 +25,14 @@
 </head>
 <body ng-controller="MainController">
     
+    <ul class="nav nav-pills navbar-inverse">
+        <li role="presentation" ng-class="{ active: currentpage != 'vote' }"><a href="#/" ng-click="startMain()">Ergebnisse</a></li>
+        <li role="presentation" ng-class="{ active: currentpage == 'vote' }"><a href="#vote" ng-click="startVote()">Vote</a></li>
+    </ul>
 
-    <nav class="navbar navbar-inverse">
+    <br>
+
+    <nav ng-show="currentpage != 'vote'" class="navbar navbar-inverse">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -63,28 +69,11 @@
       </div><!-- /.container-fluid -->
     </nav>
 
-<!-- SinglePage Teil-->
-<div class="col-md-9">
-    <div ng-view = ""></div>
-</div>
-
-
-
-
-
-
-<!-- Tutorial start-->
-
+    <!-- SinglePage Teil-->
+    <div class="col-md-9">
+        <div ng-view = ""></div>
+    </div>
 
 
 </body>
 </html>
-
-
-
-<!-- Geht aus unerklärlichen Gründen nicht-->
-<!--
-<div class="swag">
-  <div ng-include="'Sitzverteilung.html'"></div>
-</div>
--->

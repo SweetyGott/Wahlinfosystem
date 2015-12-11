@@ -1,0 +1,69 @@
+
+<h1>Stimmabgabe zur Bundestagswahl 2017</h1>
+<br>
+
+
+<!-- Log In-->
+<div ng-show="votestatus==0">
+	<div class="form-group">
+	    <label for="InfoAuth">Please authentificate yourself with the Token</label>
+		<input class="form-control" type="password" id="InfoAuth" ng-model="authkey.text" placeholder="Please Enter your Vote Token...">
+	</div>
+	<button type="submit" class="btn btn-default" ng-click="voteLogin()">Login</button>
+</div>
+
+
+
+
+
+<!--Case: Authentifiziert, trete zur Wahl an -->
+<div ng-show="votestatus==2">
+	Sie sind eingeloggt! Sie können nun ihre Stimme abgeben.
+	<br>
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table table-striped">
+				<tr ng-repeat="k1 in kandidatenerst">
+					<td><input type="radio" ng-model="vote.erst" name="erst" ng-value="{{k1.id}}"/>{{k1.titel}} {{k1.vorname}} {{k1.nachname}} {{k1.jahrgang}} {{k1.name}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<table class="table table-striped">
+				<tr ng-repeat="k2 in kandidatenzweit">
+					<td><input type="radio" ng-model="vote.zweit" name="zweit" ng-value="{{k2.id}}"/>{{k2.name}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	{{vote.erst}} {{vote.zweit}}
+	<button type="submit" class="btn btn-default" ng-click="giveVote()">Wählen!</button>
+</div>
+
+
+
+<!--Case - Bereits verwendetes Token-->
+<div ng-show="votestatus==1">
+	<h3>Dieses Token wurde bereits verwendet:</h3>
+	<button type="button" class="btn btn-default" ng-click="backtoLogin()">Zurück zum Login</button>
+</div>
+
+
+
+
+
+<!--Case - Bereits verwendetes Token-->
+<div ng-show="votestatus==3">
+	<h3>Login fehlgeschlagen:</h3>
+	<button type="button" class="btn btn-default" ng-click="backtoLogin()">Zurück zum Login</button>
+</div>
+
+
+
+
+
+<!--Case - Bereits verwendetes Token-->
+<div ng-show="votestatus==4">
+	<h3>Sie haben erfolgreich gewählt :-)</h3>
+	<button type="button" class="btn btn-default" ng-click="backtoLogin()">Zurück zum Login</button>
+</div>
