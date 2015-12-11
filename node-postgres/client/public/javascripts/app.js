@@ -503,6 +503,8 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
                 console.log(data);
                 if( data[0].insertstimme == true ) {
                     $scope.votestatus = 4;
+                    $scope.vote.erst = -1;
+                    $scope.vote.zweit = -1;
                 } else {
                     $scope.votestatus = 1;
                 }
