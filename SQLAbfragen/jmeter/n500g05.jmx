@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.8" jmeter="2.13 r1665067">
+  <hashTree>
+    <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="true">
+      <stringProp name="ConstantTimer.delay">400</stringProp>
+      <stringProp name="RandomTimer.range">200</stringProp>
+    </UniformRandomTimer>
+    <hashTree/>
+  </hashTree>
+</jmeterTestPlan>
