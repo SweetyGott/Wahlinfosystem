@@ -28,7 +28,7 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
     var queryString = "";
     switch( id ) {
         case "stimmverteilung": 
-            queryString = "SELECT bt.name, count(bt.name) AS count FROM bundestag" + jahr + " bt GROUP BY bt.name ORDER BY bt.name";
+            queryString = "SELECT * FROM resultsitzverteilung" + jahr;
             break;
         case "wahlkreise":
             queryString = "select wk.id, wk.name from wahlkreise wk where wk.fkbundesland = " + param;
