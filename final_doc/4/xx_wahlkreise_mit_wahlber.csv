@@ -1,0 +1,300 @@
+Id,Name,WB09,WB09,Land
+1,Flensburg – Schleswig,225216,226944,1
+2,Nordfriesland – Dithmarschen Nord,187047,186177,1
+3,Steinburg – Dithmarschen Süd,177604,176731,1
+4,Rendsburg-Eckernförde,198910,198903,1
+5,Kiel,200347,205243,1
+6,Plön – Neumünster,175132,174746,1
+7,Pinneberg,232899,235610,1
+8,Segeberg – Stormarn-Mitte,240010,244240,1
+9,Ostholstein – Stormarn-Nord,179987,180022,1
+10,Herzogtum Lauenburg – Stormarn-Süd,237144,241257,1
+11,Lübeck,180424,181923,1
+12,Schwerin – Ludwigslust-Parchim I – Nordwestmecklenburg I,226424,256862,2
+13,Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I,217571,182776,2
+14,Rostock – Landkreis Rostock II,224968,189772,2
+15,Vorpommern-Rügen – Vorpommern-Greifswald I,253514,211824,2
+16,Mecklenburgische Seenplatte I – Vorpommern-Greifswald II,247700,218797,2
+17,Mecklenburgische Seenplatte II – Landkreis Rostock III,230121,221887,2
+18,Hamburg-Mitte,249150,190987,3
+19,Hamburg-Altona,178340,232784,3
+20,Hamburg-Eimsbüttel,185790,190034,3
+21,Hamburg-Nord,207016,220409,3
+22,Hamburg-Wandsbek,217147,227719,3
+23,Hamburg-Bergedorf – Harburg,219191,187640,3
+24,Aurich – Emden,189804,194958,4
+25,Unterems,231076,228051,4
+26,Friesland – Wilhelmshaven – Wittmund,190546,216300,4
+27,Oldenburg – Ammerland,215591,193097,4
+28,Delmenhorst – Wesermarsch – Oldenburg-Land,226440,193643,4
+29,Cuxhaven – Stade II,189058,167867,4
+30,Stade I – Rotenburg II,192956,194856,4
+31,Mittelems,226979,179069,4
+32,Cloppenburg – Vechta,212449,197532,4
+33,Diepholz – Nienburg I,193411,194231,4
+34,Osterholz – Verden,192320,195948,4
+35,Rotenburg I – Heidekreis,168573,181122,4
+36,Harburg,191159,193157,4
+37,Lüchow-Dannenberg – Lüneburg,177098,232941,4
+38,Osnabrück-Land,197143,215285,4
+39,Stadt Osnabrück,192473,217256,4
+40,Nienburg II – Schaumburg,198376,191980,4
+41,Stadt Hannover I,180088,240409,4
+42,Stadt Hannover II,190623,219571,4
+43,Hannover-Land I,232214,208990,4
+44,Celle – Uelzen,217316,193799,4
+45,Gifhorn – Peine,216957,187425,4
+46,Hameln-Pyrmont – Holzminden,197394,208311,4
+47,Hannover-Land II,239450,222102,4
+48,Hildesheim,222804,256547,4
+49,Salzgitter – Wolfenbüttel,213208,227276,4
+50,Braunschweig,189975,179933,4
+51,Helmstedt – Wolfsburg,187831,228375,4
+52,Goslar – Northeim – Osterode,214330,188266,4
+53,Göttingen,224468,199550,4
+54,Bremen I,256131,247721,5
+55,Bremen II – Bremerhaven,231847,245268,5
+56,Prignitz – Ostprignitz-Ruppin – Havelland I,171705,191277,6
+57,Uckermark – Barnim I,168604,233118,6
+58,Oberhavel – Havelland II,249983,201922,6
+59,Märkisch-Oderland – Barnim II,255845,226487,6
+60,Brandenburg an der Havel – Potsdam-Mittelmark I – Havelland III – Teltow-Fläming I,199083,234377,6
+61,Potsdam – Potsdam-Mittelmark II – Teltow-Fläming II,239221,213791,6
+62,Dahme-Spreewald – Teltow-Fläming III – Oberspreewald-Lausitz I,246651,209414,6
+63,Frankfurt (Oder) – Oder-Spree,208525,216414,6
+64,Cottbus – Spree-Neiße,196389,214098,6
+65,Elbe-Elster – Oberspreewald-Lausitz II,192709,213132,6
+66,Altmark,182677,226117,7
+67,Börde – Jerichower Land,239481,205564,7
+68,Harz,237308,165493,7
+69,Magdeburg,249356,218889,7
+70,Dessau – Wittenberg,197289,196250,7
+71,Anhalt,253026,214614,7
+72,Halle,223268,192676,7
+73,Burgenland – Saalekreis,214081,202204,7
+74,Mansfeld,232086,227631,7
+75,Berlin-Mitte,197252,225823,8
+76,Berlin-Pankow,232250,207485,8
+77,Berlin-Reinickendorf,183112,182593,8
+78,Berlin-Spandau – Charlottenburg Nord,184436,171223,8
+79,Berlin-Steglitz-Zehlendorf,217335,166103,8
+80,Berlin-Charlottenburg-Wilmersdorf,195857,208991,8
+81,Berlin-Tempelhof-Schöneberg,232759,191475,8
+82,Berlin-Neukölln,197444,167962,8
+83,Berlin-Friedrichshain-Kreuzberg – Prenzlauer Berg Ost,222647,195692,8
+84,Berlin-Treptow-Köpenick,200391,172167,8
+85,Berlin-Marzahn-Hellersdorf,203416,191504,8
+86,Berlin-Lichtenberg,204766,181476,8
+87,Aachen I,176885,201091,9
+88,Aachen II,228546,206061,9
+89,Heinsberg,187605,198648,9
+90,Düren,199907,190611,9
+91,Rhein-Erft-Kreis I,245417,193909,9
+92,Euskirchen – Rhein-Erft-Kreis II,245382,227762,9
+93,Köln I,186798,210355,9
+94,Köln II,224430,233596,9
+95,Köln III,197023,247179,9
+96,Bonn,219218,230975,9
+97,Rhein-Sieg-Kreis I,231404,206505,9
+98,Rhein-Sieg-Kreis II,211859,172330,9
+99,Oberbergischer Kreis,211963,213488,9
+100,Rheinisch-Bergischer Kreis,215582,247138,9
+101,Leverkusen – Köln IV,213303,212903,9
+102,Wuppertal I,216614,181174,9
+103,Solingen – Remscheid – Wuppertal II,229927,210904,9
+104,Mettmann I,204450,184009,9
+105,Mettmann II,168402,213946,9
+106,Düsseldorf I,218215,206701,9
+107,Düsseldorf II,195910,200068,9
+108,Neuss I,213950,238091,9
+109,Mönchengladbach,194294,232311,9
+110,Krefeld I – Neuss II,204291,205948,9
+111,Viersen,227805,215751,9
+112,Kleve,226029,210836,9
+113,Wesel I,207451,206189,9
+114,Krefeld II – Wesel II,182878,189728,9
+115,Duisburg I,174332,224555,9
+116,Duisburg II,171011,180203,9
+117,Oberhausen – Wesel III,212283,191354,9
+118,Mülheim – Essen I,194638,184686,9
+119,Essen II,171457,210867,9
+120,Essen III,197729,215246,9
+121,Recklinghausen I,174767,209960,9
+122,Recklinghausen II,194999,180491,9
+123,Gelsenkirchen,187486,182026,9
+124,Steinfurt I – Borken I,200304,175085,9
+125,Bottrop – Recklinghausen III,208655,220668,9
+126,Borken II,196659,189698,9
+127,Coesfeld – Steinfurt II,189353,177413,9
+128,Steinfurt III,192966,196605,9
+129,Münster,210934,195615,9
+130,Warendorf,211287,219357,9
+131,Gütersloh I,232944,174002,9
+132,Bielefeld – Gütersloh II,247085,221650,9
+133,Herford – Minden-Lübbecke II,233781,240017,9
+134,Minden-Lübbecke I,209155,234360,9
+135,Lippe I,174517,199685,9
+136,Höxter – Lippe II,216917,240333,9
+137,Paderborn – Gütersloh III,243442,195077,9
+138,Hagen – Ennepe-Ruhr-Kreis I,217768,198113,9
+139,Ennepe-Ruhr-Kreis II,183435,175441,9
+140,Bochum I,214358,187473,9
+141,Herne – Bochum II,188777,166313,9
+142,Dortmund I,214213,193803,9
+143,Dortmund II,208840,211010,9
+144,Unna I,202933,256317,9
+145,Hamm – Unna II,239907,201931,9
+146,Soest,232781,217129,9
+147,Hochsauerlandkreis,209440,220643,9
+148,Siegen-Wittgenstein,218411,232164,9
+149,Olpe – Märkischer Kreis I,214196,180540,9
+150,Märkischer Kreis II,210993,216137,9
+151,Nordsachsen,178447,191191,10
+152,Leipzig I,202455,183064,10
+153,Leipzig II,212804,247128,10
+154,Leipzig-Land,231084,166975,10
+155,Meißen,216629,205756,10
+156,Bautzen I,237786,179130,10
+157,Görlitz,238958,221739,10
+158,Sächsische Schweiz-Osterzgebirge,215674,209968,10
+159,Dresden I,230676,226751,10
+160,Dresden II – Bautzen II,231247,241656,10
+161,Mittelsachsen,223149,224384,10
+162,Chemnitz,205652,175434,10
+163,Chemnitzer Umland – Erzgebirgskreis II,202743,222959,10
+164,Erzgebirgskreis I,247624,205735,10
+165,Zwickau,229535,209733,10
+166,Vogtlandkreis,213732,207555,10
+167,Waldeck,192360,215943,11
+168,Kassel,222636,198525,11
+169,Werra-Meißner – Hersfeld-Rotenburg,184337,213424,11
+170,Schwalm-Eder,194732,197424,11
+171,Marburg,185071,195953,11
+172,Lahn-Dill,212611,219976,11
+173,Gießen,214882,197679,11
+174,Fulda,210695,219472,11
+175,Main-Kinzig – Wetterau II – Schotten,181422,229316,11
+176,Hochtaunus,182246,215623,11
+177,Wetterau I,173946,205119,11
+178,Rheingau-Taunus – Limburg,221226,199241,11
+179,Wiesbaden,187479,166191,11
+180,Hanau,175874,202393,11
+181,Main-Taunus,195505,177313,11
+182,Frankfurt am Main I,190058,199091,11
+183,Frankfurt am Main II,212140,193188,11
+184,Groß-Gerau,172278,220702,11
+185,Offenbach,221180,163772,11
+186,Darmstadt,233622,171016,11
+187,Odenwald,234911,185006,11
+188,Bergstraße,199708,184370,11
+189,Eichsfeld – Nordhausen – Unstrut-Hainich-Kreis I,204717,167160,12
+190,Eisenach – Wartburgkreis – Unstrut-Hainich-Kreis II,201700,192385,12
+191,Kyffhäuserkreis – Sömmerda – Weimarer Land I,201075,216717,12
+192,Gotha – Ilm-Kreis,214510,251146,12
+193,Erfurt – Weimar – Weimarer Land II,225534,254661,12
+194,Gera – Jena – Saale-Holzland-Kreis,245228,225557,12
+195,Greiz – Altenburger Land,182336,236523,12
+196,Sonneberg – Saalfeld-Rudolstadt – Saale-Orla-Kreis,231447,215368,12
+197,Suhl – Schmalkalden-Meiningen – Hildburghausen,207012,239700,12
+198,Neuwied,242568,247787,13
+199,Ahrweiler,195658,231069,13
+200,Koblenz,196560,245379,13
+201,Mosel/Rhein-Hunsrück,178493,206868,13
+202,Kreuznach,190569,252724,13
+203,Bitburg,168357,155082,13
+204,Trier,192571,251273,13
+205,Montabaur,213225,186392,13
+206,Mainz,251837,163308,13
+207,Worms,202156,173773,13
+208,Ludwigshafen/Frankenthal,217445,215146,13
+209,Neustadt – Speyer,220974,248820,13
+210,Kaiserslautern,235030,216389,13
+211,Pirmasens,184220,170403,13
+212,Südpfalz,214215,179923,13
+213,Altötting,166775,164828,14
+214,Erding – Ebersberg,185961,160103,14
+215,Freising,212087,174569,14
+216,Fürstenfeldbruck,244678,172449,14
+217,Ingolstadt,250512,243643,14
+218,München-Nord,220785,179506,14
+219,München-Ost,231017,253603,14
+220,München-Süd,211617,193031,14
+221,München-West/Mitte,231682,185799,14
+222,München-Land,242625,226102,14
+223,Rosenheim,226483,184171,14
+224,Starnberg,242366,217994,14
+225,Traunstein,205115,197762,14
+226,Weilheim,249153,200150,14
+227,Deggendorf,154767,226597,14
+228,Landshut,246833,208231,14
+229,Passau,186068,244203,14
+230,Rottal-Inn,162109,189974,14
+231,Straubing,173068,237651,14
+232,Amberg,214616,224278,14
+233,Regensburg,243083,244541,14
+234,Schwandorf,216044,204905,14
+235,Weiden,172011,211529,14
+236,Bamberg,177197,181521,14
+237,Bayreuth,164344,198117,14
+238,Coburg,162834,204085,14
+239,Hof,180735,235344,14
+240,Kulmbach,173473,182934,14
+241,Ansbach,243953,187363,14
+242,Erlangen,177261,220007,14
+243,Fürth,249703,197797,14
+244,Nürnberg-Nord,189738,235259,14
+245,Nürnberg-Süd,184672,205635,14
+246,Roth,224946,226240,14
+247,Aschaffenburg,183872,201629,14
+248,Bad Kissingen,219607,203968,14
+249,Main-Spessart,199081,205457,14
+250,Schweinfurt,200116,162624,14
+251,Würzburg,225807,160234,14
+252,Augsburg-Stadt,206196,250706,14
+253,Augsburg-Land,240672,251583,14
+254,Donau-Ries,189097,191014,14
+255,Neu-Ulm,235775,244812,14
+256,Oberallgäu,221708,240784,14
+257,Ostallgäu,242341,199341,14
+258,Stuttgart I,184454,187157,15
+259,Stuttgart II,181088,177689,15
+260,Böblingen,244919,220166,15
+261,Esslingen,165210,208976,15
+262,Nürtingen,204091,223885,15
+263,Göppingen,180442,244880,15
+264,Waiblingen,220220,234110,15
+265,Ludwigsburg,206805,218688,15
+266,Neckar-Zaber,224090,168695,15
+267,Heilbronn,241035,210456,15
+268,Schwäbisch Hall – Hohenlohe,223234,219865,15
+269,Backnang – Schwäbisch Gmünd,176381,220400,15
+270,Aalen – Heidenheim,224418,207261,15
+271,Karlsruhe-Stadt,201833,223726,15
+272,Karlsruhe-Land,208654,223614,15
+273,Rastatt,208664,207752,15
+274,Heidelberg,211807,233382,15
+275,Mannheim,198437,235691,15
+276,Odenwald – Tauber,215910,210677,15
+277,Rhein-Neckar,195971,201249,15
+278,Bruchsal – Schwetzingen,194304,191550,15
+279,Pforzheim,220877,232499,15
+280,Calw,198923,217679,15
+281,Freiburg,210636,201934,15
+282,Lörrach – Müllheim,225703,172378,15
+283,Emmendingen – Lahr,213013,228139,15
+284,Offenburg,204619,224917,15
+285,Rottweil – Tuttlingen,200726,244267,15
+286,Schwarzwald-Baar,167458,185954,15
+287,Konstanz,197671,236732,15
+288,Waldshut,177784,219667,15
+289,Reutlingen,198399,201043,15
+290,Tübingen,189559,217783,15
+291,Ulm,218934,196621,15
+292,Biberach,162508,192663,15
+293,Bodensee,167789,191261,15
+294,Ravensburg,181362,205859,15
+295,Zollernalb – Sigmaringen,185890,224121,15
+296,Saarbrücken,207292,238320,16
+297,Saarlouis,214924,170746,16
+298,St. Wendel,184896,218597,16
+299,Homburg,201442,196071,16
