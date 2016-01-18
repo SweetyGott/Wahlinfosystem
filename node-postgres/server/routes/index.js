@@ -31,7 +31,7 @@ router.get('/api/v1/wahlinfo/:AbfrageID/:jahr/:param', function(req, res) {
             queryString = "SELECT * FROM resultsitzverteilung" + jahr;
             break;
         case "wahlkreise":
-            queryString = "select wk.id, wk.name from wahlkreise wk where wk.fkbundesland = " + param;
+            queryString = "select wk.id, wk.name from wahlkreise wk where wk.fkbundesland = " + param + " ORDER BY wk.id";
             break;
         case "bundestag":
             queryString = "select * from bundestag" + jahr;
@@ -130,7 +130,11 @@ router.get('/api/v1/vote/:AbfrageID/:param', function(req, res) {
         case "login": 
             var wk = param.substring(0,3)
             var token = param.substring(3);
-            queryString = "select * from token t where t.wk_id = " + wk + " and t.token_id = " + token;
+            if( !isNaN(token) ) {
+                queryString = "select * from token t where t.wk_id = " + wk + " and t.token_id = " + token;
+            } else {
+                queryString = "";
+            }
             break;
         case "geterst":
             queryString =   "select b.id, b.titel, b.vorname, b.nachname, b.jahrgang,p.name " +

@@ -1,5 +1,6 @@
 # Wahlinfosystem
-SE Datenbankprojekt Wahlinformationssystem
+# SE Datenbankprojekt Wahlinformationssystem
+# Jens Wöhrle, Martin Wurzer
 
 
 # im Order node-postgres ist die Web-applikation gespeichert.

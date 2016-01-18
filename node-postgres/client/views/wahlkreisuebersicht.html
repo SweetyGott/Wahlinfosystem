@@ -1,21 +1,26 @@
-<div class="btn-group btn-group-lg">
+<div class="btn-group">
    <button ng-repeat="b in bundeslaender" ng-class="{ active: aktivesBundesland == b.id }" ng-click="loadSelectedWahlkreise(b.id)" type="button" class="btn btn-primary">{{b.name}}</button>
 </div>
 
+<br><br>
 
-<div class="btn-group btn-group-lg">
+<div class="btn-group">
    <button ng-repeat="wk in selectedwahlkreise" ng-class="{ active: aktiverWahlkreis.id == wk.id }" ng-click="loadaktiverWahlkreis(wk)" type="button" class="btn btn-primary">{{wk.id}}: {{wk.name}}</button>
 </div>
+
+<br><br>
 
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{aktiverWahlkreis.id}}: {{aktiverWahlkreis.name}}</h3>
   </div>
   <div class="panel-body">
-    Wahlbeteiligung bei: {{wkwahlbeteiligung[0].wahlbeteiligung}}<br>
-    Sieger des Wahlkreises: {{wkdirektmandat[0].titel}} {{wkdirektmandat[0].vorname}} {{wkdirektmandat[0].nachname}}, {{wkdirektmandat[0].jahrgang}} - {{wkdirektmandat[0].name}} <br>
+  	<h3><span class="label label-info">Wahlbeteiligung: {{wkwahlbeteiligung[0].wahlbeteiligung}}</span></h3><br>
+  	<h3><span class="label label-success">
+  		Sieger des Wahlkreises: {{wkdirektmandat[0].titel}} {{wkdirektmandat[0].vorname}} {{wkdirektmandat[0].nachname}}, {{wkdirektmandat[0].jahrgang}} - {{wkdirektmandat[0].name}}
+  	</span></h3><br>
 
-    Stimmen der Parteien:
+    <h3>Zweitstimmen der Parteien:</h3>
     <table ng-table="wkstimmentable" class="table" show-filter="true">
 	    <tr ng-repeat="wks in wkstimmendata">
 	        <td title="'Partei'" filter="{ name: 'text'}" sortable="'name'">
@@ -26,12 +31,12 @@
 	            {{wks.stimmenrel}}</td>
 	    </tr>
 	</table>
-    Vergleich 2013 und 2009:
+    <h3>Vergleich 2013 und 2009:</h3>
 	<table ng-table="wkdifferencetable" class="table" show-filter="true">
 	    <tr ng-repeat="wkd in wkdifferencedata">
 	        <td title="'Partei'" filter="{ name: 'text'}" sortable="'name'">
 	            {{wkd.name}}</td>
-	        <td title="'Absolute Veränderung'" filter="{ changeabs: 'text'}" sortable="'changeabs'">
+	        <td title="'Absolute Veränderung'" filter="{ veraenderungabs: 'text'}" sortable="'veraenderungabs'">
 	            {{wkd.veraenderungabs}}</td>
 	    </tr>    
 	</table>

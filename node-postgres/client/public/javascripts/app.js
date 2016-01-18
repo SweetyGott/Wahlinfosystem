@@ -382,13 +382,14 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     //WkÜbersicht tables
     $scope.wkstimmentable = new ngTableParams({
         page: 1,
-        count: 20
-    },{    
+        count: 30
+    },{
+        counts: [],    
         total: $scope.wkstimmen.length, 
         getData: function ($defer, params) {
             $scope.wkstimmendata = params.sorting() ? $filter('orderBy')($scope.wkstimmen, params.orderBy()) : $scope.wkstimmen;
             $scope.wkstimmendata = params.filter() ? $filter('filter')($scope.wkstimmendata, params.filter()) : $scope.wkstimmendata;
-            $scope.wkstimmendata = $scope.wkstimmendata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            //$scope.wkstimmendata = $scope.wkstimmendata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.wkstimmendata);
 
             params.total($scope.wkstimmen.length); 
@@ -396,13 +397,14 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     });
     $scope.wkdifferencetable = new ngTableParams({
         page: 1,
-        count: 20
-    },{    
+        count: 30
+    },{  
+        counts: [],  
         total: $scope.wkdifference.length, 
         getData: function ($defer, params) {
             $scope.wkdifferencedata = params.sorting() ? $filter('orderBy')($scope.wkdifference, params.orderBy()) : $scope.wkdifference;
             $scope.wkdifferencedata = params.filter() ? $filter('filter')($scope.wkdifferencedata, params.filter()) : $scope.wkdifferencedata;
-            $scope.wkdifferencedata = $scope.wkdifferencedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            //$scope.wkdifferencedata = $scope.wkdifferencedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.wkdifferencedata);
 
             params.total($scope.wkdifference.length); 
@@ -411,14 +413,15 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
 
     //Ueberhangmandattable
     $scope.ueberhangmandattable = new ngTableParams({
-        page: 1,
-        count: 20
+        //page: 1,
+        //count: 20
     },{    
+        counts: [],
         total: $scope.ueberhangmandate.length, 
         getData: function ($defer, params) {
             $scope.ueberhangmandatedata = params.sorting() ? $filter('orderBy')($scope.ueberhangmandate, params.orderBy()) : $scope.ueberhangmandate;
             $scope.ueberhangmandatedata = params.filter() ? $filter('filter')($scope.ueberhangmandatedata, params.filter()) : $scope.ueberhangmandatedata;
-            $scope.ueberhangmandatedata = $scope.ueberhangmandatedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
+            //$scope.ueberhangmandatedata = $scope.ueberhangmandatedata.slice((params.page() - 1) * params.count(), params.page() * params.count());
             $defer.resolve($scope.ueberhangmandatedata);
 
             params.total($scope.ueberhangmandate.length); 
@@ -429,7 +432,8 @@ angular.module('nodeTodo', ['googlechart', 'ngRoute', 'ngTable', 'ui.router'])
     $scope.knappstesiegertable = new ngTableParams({
         page: 1,
         count: 20
-    },{    
+    },{  
+        counts: [],  
         total: $scope.knappsteSieger.length, 
         getData: function ($defer, params) {
             $scope.knappsteSiegerdata = params.sorting() ? $filter('orderBy')($scope.knappsteSieger, params.orderBy()) : $scope.knappsteSieger;
