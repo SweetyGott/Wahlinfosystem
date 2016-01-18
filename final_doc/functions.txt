@@ -1,0 +1,722 @@
+"CREATE OR REPLACE FUNCTION public.utilmpl(direktproland integer[], parteistimmenproland integer[], a integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		ret integer := 0;
+		i integer;
+	BEGIN
+                FOR i IN 1..array_length(direktproland, 1)
+                LOOP
+                IF parteistimmenproland[i] > 0 THEN
+                -- increment number of seats with current divisor
+                ret = ret + GREATEST (direktproland[i], round(parteistimmenproland[i] * 1.0/ a));
+                END IF;
+                END LOOP;
+	return ret;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.utilsnp(stimmarr integer[], a integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		ret integer;
+		i integer;
+	
+	BEGIN
+
+	-- calculates the accumulated number of seats with current divisor
+	ret = 0;
+	
+                FOREACH i IN ARRAY stimmarr
+                LOOP 
+                ret = ret + round(i * 1.0/ a);
+                END LOOP;
+                
+	return ret;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.generatetokens()
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+
+	DECLARE 
+		anz_wahlber integer;
+		i integer;
+
+	BEGIN
+
+        FOR i IN 1..299
+        LOOP
+
+        SELECT wähler13 INTO anz_wahlber FROM wahlkreise WHERE id = i;
+
+        INSERT INTO token (wk_id, token_id, used) 
+        SELECT i, generate_series, False FROM generate_series(1,anz_wahlber) series;
+
+	END LOOP;
+   	END;
+   	
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.getdivisormaxbt2009()
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer := 0;
+		i integer;
+
+		mindestsitze integer := 
+		(select sum(m.greatest)
+	        from minsitzeproland2009 m);	 
+		
+                -- array mit zweitstimmen für partei
+                stimmenarr integer[] :=
+                array(
+                select sum(zpl.stimmen) as sumstimm
+		from zweitstimmenproland2009 zpl
+		group by zpl.partei_id
+		ORDER BY zpl.partei_id
+                );
+
+                mandatarr integer[] :=
+                array(
+                select sum(m.greatest) as summand
+		from minsitzeproland2009 m
+		group by m.partei_id
+		ORDER BY m.partei_id
+                );
+                		
+	BEGIN
+
+               FOREACH i IN ARRAY stimmenarr
+               LOOP
+               div = div + (i*1.0/mindestsitze);
+               END LOOP;
+               
+
+		IF (utilbtg(stimmenarr,mandatarr,div) > 0) THEN
+			direction = 100;
+		ELSE 
+			direction = -100;
+		END IF;
+		
+		while utilbtg(stimmenarr,mandatarr,div) != 0 LOOP
+
+			div = div + direction;
+			
+		END LOOP;
+
+		RETURN div;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.generaterealsitzeproland2009()
+ RETURNS TABLE(bl_id integer, partei_id integer, sitze integer)
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		i integer;
+		div integer;
+	BEGIN
+
+	drop table if exists res;
+        create temporary table res (bl_id integer, partei_id integer, sitze integer) on commit drop;
+
+        FOR i IN 1..16
+        LOOP
+
+        div = getdivisor2snp2009(i);
+        
+        INSERT INTO res (bl_id,partei_id,sitze) 
+        select z.bl_id,z.partei_id, round(z.stimmen*1.0/div) as sitze from zweitstimmenproland2009 z 
+        where z.bl_id = i;
+        
+	END LOOP;
+
+	RETURN QUERY SELECT * FROM res;
+	drop table res;
+   	END;
+   	
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.generaterealsitzeproland2013()
+ RETURNS TABLE(bl_id integer, partei_id integer, sitze integer)
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		i integer;
+		div integer;
+	BEGIN
+
+	-- create result table
+	drop table if exists res;
+        create temporary table res (bl_id integer, partei_id integer, sitze integer) on commit drop;
+
+	-- loop over federal states
+        FOR i IN 1..16
+        LOOP
+
+	-- get divisor for federal state (seats per party)
+        div = getdivisor2snp2013(i);
+
+        -- insert number of seats according to second vote result 
+        INSERT INTO res (bl_id,partei_id,sitze) 
+        select z.bl_id,z.partei_id, round(z.stimmen*1.0/div) as sitze from zweitstimmenproland2013 z 
+        where z.bl_id = i;
+        
+	END LOOP;
+
+	RETURN QUERY SELECT * FROM res;
+
+	drop table res;
+   	END;
+   	
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.getdivisor2snp2009(bl_idparam integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer;
+
+		sitzefuerLand integer := 
+		(select spl.sitze
+	        from sitzeProLand2009 spl
+	        where spl.id = bl_idparam);	 
+		
+                stimmenarr integer[] := 
+                array(
+                select zpl.stimmen
+		from zweitstimmenproland2009 zpl
+		where zpl.bl_id = bl_idparam
+                );
+                		
+	BEGIN
+
+                div = utilsnp(stimmenarr,1)/sitzefuerLand;
+                		
+		IF (utilsnp(stimmenarr,div) > sitzefuerLand ) THEN
+			direction = 50;
+		ELSE 
+			direction = -50;
+		END IF;
+		
+		while utilsnp(stimmenarr,div) != sitzefuerLand LOOP
+
+			div = div + direction;
+			
+		END LOOP;
+
+		RETURN div;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.getdivisor2snp2013(bl_idparam integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer;
+
+		-- bundestags seats of the given state
+		sitzefuerLand integer := 
+		(select spl.sitze
+	        from sitzeProLand2013 spl
+	        where spl.id = bl_idparam);	 
+		
+                -- array with second votes for given state
+                stimmenarr integer[] := 
+                array(
+                select zpl.stimmen
+		from zweitstimmenproland2013 zpl
+		where zpl.bl_id = bl_idparam
+                );
+                		
+	BEGIN
+
+                -- get starting divisor
+                div = utilsnp(stimmenarr,1)/sitzefuerLand;
+                		
+		IF (utilsnp(stimmenarr,div) > sitzefuerLand ) THEN
+			direction = 100;
+		ELSE 
+			direction = -100;
+		END IF;
+
+		-- adjust until the number of seats per state is reached
+		while utilsnp(stimmenarr,div) != sitzefuerLand LOOP
+
+			div = div + direction;
+			
+		END LOOP;
+
+		RETURN div;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.insertstimme(wk_ integer, token_id_ integer, voteerst_ integer, votezweit_ integer)
+ RETURNS boolean
+ LANGUAGE plpgsql
+AS $function$
+BEGIN
+	IF 
+		(select t1.used from token t1 where wk_id = wk_ and token_id = token_id_) = false 
+	THEN
+		INSERT INTO stimmzettel(erststimme, zweitstimme, jahr, fkwahlkreis)
+		VALUES ( voteerst_, votezweit_, 2017, wk_);
+		
+		UPDATE token
+		set used = true
+		where wk_id = wk_ and token_id = token_id_;
+		RETURN true;
+	ELSE
+		RETURN false;
+	END IF;
+END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.schritt01_2009()
+ RETURNS TABLE(id integer, mandat integer)
+ LANGUAGE plpgsql
+AS $function$
+	BEGIN
+	
+	if to_regclass('bundessitze') is null then
+		create temp table bundessitze as ( select bl.id, bl.name, bl.bevölkerung09, round( bl.bevölkerung09*1.0/
+											((select sum(bl2.bevölkerung09)
+											from bundesländer bl2)
+											/
+											598.0))::integer as mandate
+					from bundesländer bl);
+		
+		WHILE ( select sum(bs.mandate) from bundessitze bs ) < 598 LOOP
+			UPDATE bundessitze
+			SET mandate = mandate + 1
+			WHERE bevölkerung09/(mandate+0.5) = ( 	select max(bs.bevölkerung09/(mandate+0.5))
+								from bundessitze bs) ;
+		END LOOP;
+
+		WHILE ( select sum(bs.mandate) from bundessitze bs ) > 598 LOOP
+			UPDATE bundessitze
+			SET mandate = mandate - 1
+			WHERE floor(bevölkerung09/(mandate-0.5)) = floor( ( 	select min(bs.bevölkerung09/(mandate+0.5))
+										from bundessitze bs));
+		END LOOP;
+
+	END IF;
+	
+
+	return query select ret.id, ret.mandate from bundessitze ret;
+	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.mandateproland2013()
+ RETURNS TABLE(bl_id integer, partei_id integer, sitze integer)
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer := 0;
+		i integer;
+		loopid integer;
+		gesmandate integer;
+
+                parteiids integer[] := 
+                array(SELECT * FROM (select DISTINCT z.partei_id
+                from zweitstimmenproland2013 z
+                ORDER BY partei_id) a);
+                
+                direktproland integer[];
+                parteistimmenproland integer[];
+                länderids integer[] := array(SELECT * FROM generate_series(1,16));
+
+	BEGIN
+		drop table if exists dm;
+		drop table if exists bt;
+		drop table if exists ps;
+
+		-- get temporary tables
+		
+               create temporary table dm as (select * from direktmandate2013);
+               create temporary table bt as (select * from btmandatepartei2013);
+               create temporary table ps as (select * from zweitstimmenproland2013);
+
+               create temporary table mandateproland (bl_id integer, partei_id integer, sitze integer) on commit drop;
+
+		-- with supplementary seats
+
+		-- loop over party ids
+               FOREACH loopid IN ARRAY parteiids
+               LOOP
+
+		-- get number of mandates
+		gesmandate = (SELECT bt.round from bt where bt.partei_id = loopid);
+		-- create new divisor
+                div = (SELECT sum(ps.stimmen) FROM ps WHERE ps.partei_id = loopid GROUP BY ps.partei_id)*1.0/gesmandate;
+
+		-- get number of direct seats per state
+                direktproland = array(SELECT coalesce(count,0) FROM generate_series(1,16) k LEFT JOIN 
+                (SELECT wk.fkbundesland, count(*) FROM dm JOIN wahlkreise wk ON dm.idwahlkreis = wk.id WHERE idpartei = loopid
+                GROUP BY wk.fkbundesland ORDER BY wk.fkbundesland) l ON k.k = l.fkbundesland);
+
+		-- get number of second votes per state
+		parteistimmenproland = array(SELECT coalesce(stimmen,0) FROM generate_series(1,16) k
+		LEFT JOIN (SELECT ps.bl_id, stimmen FROM ps WHERE ps.partei_id = loopid) l ON k.k = l.bl_id );
+		                
+               IF (utilmpl(direktproland,parteistimmenproland,div) > gesmandate) THEN
+			direction = 1;
+		ELSE 
+			direction = -1;
+		END IF;
+
+		-- adjust divisor as long as not all mandates are distributed
+                while utilmpl(direktproland,parteistimmenproland,div) != gesmandate 
+                LOOP
+			div = div + direction;
+		END LOOP;
+		
+               FOR i IN 1..array_length(direktproland,1)
+               LOOP
+
+		-- insert either the amount of direct mandates or the number of mandates achieved via second vote
+               INSERT INTO mandateproland VALUES
+               (länderids[i], loopid, (SELECT GREATEST (direktproland[i],round(parteistimmenproland[i] * 1.0/ div))));
+               END LOOP;
+
+		
+               END LOOP;
+
+	       RETURN QUERY SELECT * FROM mandateproland;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.schritt01_2013()
+ RETURNS TABLE(id integer, mandat integer)
+ LANGUAGE plpgsql
+AS $function$
+	BEGIN
+	-- calculate the number of seats per state with Höchstzahlverfahren
+	if to_regclass('bundessitze') is null then
+		create temp table bundessitze as ( select bl.id, bl.name, bl.bevölkerung13, round( bl.bevölkerung13*1.0/
+											((select sum(bl2.bevölkerung13)
+											from bundesländer bl2)
+											/
+											598.0))::integer as mandate
+					from bundesländer bl);
+		
+		WHILE ( select sum(bs.mandate) from bundessitze bs ) < 598 LOOP
+			UPDATE bundessitze
+			SET mandate = mandate + 1
+			WHERE bevölkerung13/(mandate+0.5) = ( 	select max(bs.bevölkerung13/(mandate+0.5))
+								from bundessitze bs) ;
+		END LOOP;
+
+		WHILE ( select sum(bs.mandate) from bundessitze bs ) > 598 LOOP
+			UPDATE bundessitze
+			SET mandate = mandate - 1
+			WHERE floor(bevölkerung13/(mandate-0.5)) = floor( ( 	select min(bs.bevölkerung13/(mandate+0.5))
+										from bundessitze bs));
+		END LOOP;
+
+	END IF;
+	
+
+	return query select ret.id, ret.mandate from bundessitze ret;
+	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.utilbtg(stimmarr integer[], mandatarr integer[], a integer)
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		ret integer := 0;
+		i integer;
+		mand integer;
+	BEGIN
+		-- loop over array with second votes for federal state
+                FOR i IN 1..array_length(stimmarr, 1)
+                LOOP 
+                -- get the number of mandates with current divisor - if not enough decrease result
+                mand = round(stimmarr[i] * 1.0/ a);
+                IF mand < mandatarr[i] THEN ret = ret - (mandatarr[i] - mand); END IF;
+                END LOOP;
+	return ret;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.getzweitbt2009()
+ RETURNS TABLE(id integer)
+ LANGUAGE plpgsql
+AS $function$
+
+	DECLARE 
+        listeid integer;
+        fill integer;
+        i integer;
+        j integer;
+        bewid integer;
+        
+        BEGIN
+
+	drop table if exists dm;
+	drop table if exists pml;
+	drop table if exists dirm;
+	drop table if exists listerest;
+	drop table if exists direkt;
+	drop table if exists res;
+
+	create temporary table pml as (SELECT * FROM parteimandateproland2009 pm WHERE pm.sitze != 0);
+	create temporary table dirm as (SELECT * FROM direktmandate2009);
+
+	create temporary table listerest AS (SELECT bl_id , partei_id, (sitze-
+	(SELECT count(*) FROM dirm JOIN wahlkreise wk ON dirm.idwahlkreis = wk.id 
+	WHERE bl_id = wk.fkbundesland AND partei_id = dirm.idpartei)) as anzliste FROM pml);
+
+	create temporary table direkt as (SELECT b.id, b.vorname, b.nachname, p.name FROM dirm 
+	LEFT JOIN bewerber b ON b.id = dirm.idbewerber
+	LEFT JOIN parteien p ON p.id = b.fkpartei);
+
+        create temporary table res (id integer);
+        
+        -- START OF LOGIC
+
+        FOREACH listeid IN ARRAY array(SELECT lp.id FROM landeslisten lp JOIN legaleparteien2009 l ON lp.fkpartei = l.id)
+        LOOP
+
+        fill = (SELECT anzliste 
+        FROM listerest lr 
+        JOIN landeslisten ll ON ll.fkbundesland = lr.bl_id AND ll.fkpartei = lr.partei_id AND ll.jahr = 2009
+        WHERE ll.id = listeid);
+
+        i = 1;
+        j = 1;
+        while i <= fill AND j < (SELECT max(lp.rang) FROM listenplätze lp WHERE lp.fkliste = listeid)
+        LOOP
+
+        bewid = (SELECT lp.fkbewerber FROM listenplätze lp WHERE lp.fkliste = listeid AND lp.rang = j
+        AND not exists (SELECT * FROM direkt WHERE direkt.id = lp.fkbewerber));
+
+        IF bewid IS NOT NULL THEN
+        INSERT INTO res (SELECT bewid);
+        i = i+1;
+        END IF;
+        j = j+1;
+
+        END LOOP;
+
+        END LOOP;
+
+        RETURN QUERY (SELECT * FROM res);
+        END;
+        $function$
+"
+"CREATE OR REPLACE FUNCTION public.getdivisormaxbt2013()
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer := 0;
+		i integer;
+
+		mindestsitze integer := 
+		(select sum(m.greatest)
+	        from minsitzeproland2013 m);	 
+		
+                -- array with second votes for a given state
+                stimmenarr integer[] :=
+                array(
+                select sum(zpl.stimmen) as sumstimm
+		from zweitstimmenproland2013 zpl
+		group by zpl.partei_id
+		ORDER BY zpl.partei_id
+                );
+
+		-- get the minimal amount of seats per state
+                mandatarr integer[] :=
+                array(
+                select sum(m.greatest) as summand
+		from minsitzeproland2013 m
+		group by m.partei_id
+		ORDER BY m.partei_id
+                );
+                		
+	BEGIN
+
+               FOREACH i IN ARRAY stimmenarr
+               LOOP
+               div = div + (i*1.0/mindestsitze);
+               END LOOP;
+               
+
+		IF (utilbtg(stimmenarr,mandatarr,div) > 0) THEN
+			direction = 100;
+		ELSE 
+			direction = -100;
+		END IF;
+
+		-- adjust the divisor until every party has its minimal amount of mandates
+		while utilbtg(stimmenarr,mandatarr,div) != 0 LOOP
+
+			div = div + direction;
+			
+		END LOOP;
+
+		RETURN div;
+   	END;
+$function$
+"
+"CREATE OR REPLACE FUNCTION public.getzweitbt2013()
+ RETURNS TABLE(id integer)
+ LANGUAGE plpgsql
+AS $function$
+
+	DECLARE 
+        listeid integer;
+        fill integer;
+        i integer;
+        j integer;
+        bewid integer;
+        
+        BEGIN
+
+	drop table if exists dm;
+	drop table if exists pml;
+	drop table if exists dirm;
+	drop table if exists listerest;
+	drop table if exists direkt;
+	drop table if exists res;
+
+	-- create temporary tables with 
+
+	create temporary table pml as (SELECT * FROM parteimandateproland2013 pm WHERE pm.sitze != 0);
+	create temporary table dirm as (SELECT * FROM direktmandate2013);
+
+	create temporary table listerest AS (SELECT bl_id , partei_id, (sitze-
+	(SELECT count(*) FROM dirm JOIN wahlkreise wk ON dirm.idwahlkreis = wk.id 
+	WHERE bl_id = wk.fkbundesland AND partei_id = dirm.idpartei)) as anzliste FROM pml);
+
+	create temporary table direkt as (SELECT b.id, b.vorname, b.nachname, p.name FROM dirm 
+	LEFT JOIN bewerber b ON b.id = dirm.idbewerber
+	LEFT JOIN parteien p ON p.id = b.fkpartei);
+
+        create temporary table res (id integer);
+        
+        -- START OF LOGIC
+
+	-- loop over federal state lists for legal parties
+        FOREACH listeid IN ARRAY array(SELECT lp.id FROM landeslisten lp JOIN legaleparteien2013 l ON lp.fkpartei = l.id)
+        LOOP
+
+	-- get the rest of applicants who have no direct mandate
+        fill = (SELECT anzliste 
+        FROM listerest lr 
+        JOIN landeslisten ll ON ll.fkbundesland = lr.bl_id AND ll.fkpartei = lr.partei_id AND ll.jahr = 2013
+        WHERE ll.id = listeid);
+
+        i = 1;
+        j = 1;
+        -- as long as spots available and rank lower than highest
+        while i <= fill AND j < (SELECT max(lp.rang) FROM listenplätze lp WHERE lp.fkliste = listeid)
+        LOOP
+
+        bewid = (SELECT lp.fkbewerber FROM listenplätze lp WHERE lp.fkliste = listeid AND lp.rang = j
+        AND not exists (SELECT * FROM direkt WHERE direkt.id = lp.fkbewerber));
+
+        IF bewid IS NOT NULL THEN
+        INSERT INTO res (SELECT bewid);
+        i = i+1;
+        END IF;
+        j = j+1;
+
+        END LOOP;
+
+        END LOOP;
+
+        RETURN QUERY (SELECT * FROM res);
+        END;
+        $function$
+"
+"CREATE OR REPLACE FUNCTION public.mandateproland2009()
+ RETURNS TABLE(bl_id integer, partei_id integer, sitze integer)
+ LANGUAGE plpgsql
+AS $function$
+	DECLARE 
+		direction integer;
+		div integer := 0;
+		i integer;
+		loopid integer;
+		gesmandate integer;
+
+                parteiids integer[] := 
+                array(SELECT * FROM (select DISTINCT z.partei_id
+                from zweitstimmenproland2009 z
+                ORDER BY partei_id) a);
+
+                --
+                
+                direktproland integer[];
+                parteistimmenproland integer[];
+                länderids integer[] := array(SELECT * FROM generate_series(1,16));
+
+	BEGIN
+		drop table if exists dm;
+		drop table if exists bt;
+		drop table if exists ps;
+		
+               create temporary table dm as (select * from direktmandate2009);
+               create temporary table bt as (select * from btmandatepartei2009);
+               create temporary table ps as (select * from zweitstimmenproland2009);
+
+               create temporary table mandateproland (bl_id integer, partei_id integer, sitze integer) on commit drop;
+
+               FOREACH loopid IN ARRAY parteiids
+               LOOP
+
+
+		gesmandate = (SELECT bt.round from bt where bt.partei_id = loopid);
+                div = (SELECT sum(ps.stimmen) FROM ps WHERE ps.partei_id = loopid GROUP BY ps.partei_id)*1.0/gesmandate;
+
+                direktproland = array(SELECT coalesce(count,0) FROM generate_series(1,16) k LEFT JOIN 
+                (SELECT wk.fkbundesland, count(*) FROM dm JOIN wahlkreise wk ON dm.idwahlkreis = wk.id WHERE idpartei = loopid
+                GROUP BY wk.fkbundesland ORDER BY wk.fkbundesland) l ON k.k = l.fkbundesland);
+
+		parteistimmenproland = array(SELECT coalesce(stimmen,0) FROM generate_series(1,16) k
+		LEFT JOIN (SELECT ps.bl_id, stimmen FROM ps WHERE ps.partei_id = loopid) l ON k.k = l.bl_id );
+		                
+               IF (utilmpl(direktproland,parteistimmenproland,div) > gesmandate) THEN
+			direction = 1;
+		ELSE 
+			direction = -1;
+		END IF;
+
+                while utilmpl(direktproland,parteistimmenproland,div) != gesmandate 
+                LOOP
+			div = div + direction;
+		END LOOP;
+		
+               FOR i IN 1..array_length(direktproland,1)
+               LOOP
+
+               INSERT INTO mandateproland VALUES
+               (länderids[i], loopid, (SELECT GREATEST (direktproland[i],round(parteistimmenproland[i] * 1.0/ div))));
+               END LOOP;
+
+		
+               END LOOP;
+
+	       RETURN QUERY SELECT * FROM mandateproland;
+   	END;
+$function$
+"

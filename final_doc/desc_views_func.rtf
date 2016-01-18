@@ -1,0 +1,128 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\fnil\fcharset0 Calibri;\f1\ftech\fcharset77 Symbol;}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab708
+\pard\pardeftab708\ri-52\sl259\slmult1\sa160\partightenfactor0
+
+\f0\fs24 \cf0 Description of Views:\
+\pard\pardeftab708\li720\fi-360\ri-52\sl259\slmult1\sa160\partightenfactor0
+\ls1\ilvl0
+\f1 \cf0 \'a5	
+\f0\b Btmandatepartei
+\b0  \'96 number of seats per party in bundestag (uses 
+\i f:getdivisormaxbt 
+\i0 & zweitstimmenproland)\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Bundestag
+\b0  \'96 list of bundestag members (uses 
+\i f:getzweitbt 
+\i0 & direktmandate)\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Closest
+\b0  \'96 closest winners/losers \
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Direktmandate
+\b0  \'96 gets directly voted applicants\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Legaleparteien
+\b0  \'96 gets legal parties 5% or 3 direct mandates (uses direktmandate)\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Minsitzeproland
+\b0  \'96 minimal amount of seats per party/state (uses 
+\i f:generaterealsitzeproland
+\i0 ) either direct or as second vote without supplementary seats\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Numdirektmandatebw
+\b0  \'96 number of direct mandates per party\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Parteimandateproland
+\b0  \'96 number of mandates per party/state with supplementary seats (uses 
+\i f:mandateproland
+\i0 )\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Resultmitgliederbt
+\b0  \'96 list of members of the bundestag\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Resultsitzverteilung
+\b0  \'96 allocation of seats per party\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Sitzeproland
+\b0  \'96 seats per federal state (uses 
+\i f:schnitt01
+\i0 )\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Wksieger
+\b0  \'96 winning party for first/snd vote for each constituency\
+\ls1\ilvl0
+\f1 \'a5	
+\f0\b Zweitstimmenproland
+\b0  \'96 second votes per party/state\
+\pard\pardeftab708\ri-52\sl259\slmult1\sa160\partightenfactor0
+\cf0 Description of Functions:\
+\pard\pardeftab708\li720\fi-360\ri-52\sl259\slmult1\sa160\partightenfactor0
+\ls2\ilvl0
+\f1 \cf0 \'a5	
+\f0\b Generaterealsitzeproland 
+\b0 \'96 gets the number of seats per party/state (uses 
+\i f:getdivisor2snp
+\i0  to calculate the divisor for a given state) \
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Generatetokens
+\b0  \'96 function to generate the voting tokens with simple increment\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Getdivisor2snp 
+\b0 \'96 calculates the divisor for a federal state (uses 
+\i f:utilsnp
+\i0  to calculate the indermediary divisor)\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Getdivisormaxbt 
+\b0 \'96 get the divisor (uses 
+\i f:utilbtg
+\i0  to calculate the number of missing mandates)\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Getzweitbt 
+\b0 \'96 gets the people on federal state lists who didn\'92t win direct mandates but have a rank high enough to get into bundestag\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Insertstimme 
+\b0 \'96 function to insert a new vote into tokens\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Mandateproland 
+\b0 \'96 get number of mandates per country/party, direct or of second vote (uses f:utilmpl to check if the divisor is right)\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Schritt01 
+\b0 \'96 calculates the number of seats per state\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Utilbtg 
+\b0 \'96 gets a list of second votes, the target amount of mandates and the current divisor and returns the number of missing mandates\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Utilmpl 
+\b0 \'96 calculates the accumulated number of seats per party/state\
+\ls2\ilvl0
+\f1 \'a5	
+\f0\b Utilsnp 
+\b0 \'96 calculates the accumulated number of seats given a divisor\
+}

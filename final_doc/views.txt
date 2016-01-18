@@ -1,0 +1,327 @@
+-- View: public.btmandatepartei2013
+
+-- DROP VIEW public.btmandatepartei2013;
+
+CREATE OR REPLACE VIEW public.btmandatepartei2013 AS 
+ WITH div AS (
+         SELECT getdivisormaxbt2013.getdivisormaxbt2013
+           FROM public.getdivisormaxbt2013() getdivisormaxbt2013(getdivisormaxbt2013)
+        )
+ SELECT zpl.partei_id,
+    round(sum(zpl.stimmen) * 1.0 / (( SELECT div.getdivisormaxbt2013
+           FROM div))::numeric) AS round
+   FROM zweitstimmenproland2013 zpl
+  GROUP BY zpl.partei_id;
+
+ALTER TABLE public.btmandatepartei2013
+  OWNER TO postgres;
+
+-- View: public.bundestag2013
+
+-- DROP VIEW public.bundestag2013;
+
+CREATE OR REPLACE VIEW public.bundestag2013 AS 
+ SELECT a.id,
+    a.nachname,
+    a.vorname,
+    a.name,
+    a.text
+   FROM ( SELECT b.id,
+            b.nachname,
+            b.vorname,
+            p.name,
+            'ZWEIT'::text AS text
+           FROM public.getzweitbt2013() dz(id)
+             JOIN bewerber b ON dz.id = b.id
+             JOIN parteien p ON p.id = b.fkpartei
+        UNION
+         SELECT b.id,
+            b.nachname,
+            b.vorname,
+            p.name,
+            'ERST'::text AS text
+           FROM direktmandate2013 dirma
+             JOIN bewerber b ON dirma.idbewerber = b.id
+             JOIN parteien p ON p.id = b.fkpartei) a
+  ORDER BY a.nachname;
+
+ALTER TABLE public.bundestag2013
+  OWNER TO postgres;
+
+-- View: public.closest2013
+
+-- DROP VIEW public.closest2013;
+
+CREATE OR REPLACE VIEW public.closest2013 AS 
+ WITH diff AS (
+         SELECT sub.fkwahlkreis,
+            sub.stimmen,
+            sub.idbew,
+            sub.fkpartei,
+            sub.rowid,
+                CASE sub.rowid
+                    WHEN 1 THEN sub.stimmen - nth_value(sub.stimmen, 2) OVER fkw
+                    ELSE sub.stimmen - first_value(sub.stimmen) OVER fkw
+                END AS diff
+           FROM ( SELECT a.fkwahlkreis,
+                    a.stimmen,
+                    b_1.id AS idbew,
+                    b_1.fkpartei,
+                    a.rowid
+                   FROM ( SELECT ergebnisseerst.id,
+                            ergebnisseerst.stimmen,
+                            ergebnisseerst.jahr,
+                            ergebnisseerst.fkwahlkreis,
+                            ergebnisseerst.fkbewerber,
+                            rank() OVER (PARTITION BY ergebnisseerst.fkwahlkreis ORDER BY ergebnisseerst.stimmen DESC) AS rowid
+                           FROM ergebnisseerst
+                          WHERE ergebnisseerst.jahr = 2013) a
+                     JOIN bewerber b_1 ON b_1.id = a.fkbewerber
+                  ORDER BY a.fkwahlkreis, a.stimmen DESC) sub
+          WINDOW fkw AS (PARTITION BY sub.fkwahlkreis)
+        ), closestwinners AS (
+         SELECT a.id AS partei_id,
+            a.fkwahlkreis AS wk_id,
+            a.idbew AS bew_id,
+            a.diff
+           FROM ( SELECT p_1.id,
+                    p_1.name,
+                    d.fkwahlkreis,
+                    d.stimmen,
+                    d.idbew,
+                    d.fkpartei,
+                    d.rowid,
+                    d.diff,
+                    rank() OVER (PARTITION BY p_1.id ORDER BY d.diff) AS closest
+                   FROM parteien p_1
+                     JOIN diff d ON p_1.id = d.fkpartei
+                  WHERE d.diff > 0
+                  ORDER BY p_1.name, d.diff) a
+          WHERE a.closest <= 10
+        ), closestlosers AS (
+         SELECT a.id AS partei_id,
+            a.fkwahlkreis AS wk_id,
+            a.idbew AS bew_id,
+            a.diff
+           FROM ( SELECT p_1.id,
+                    p_1.name,
+                    d.fkwahlkreis,
+                    d.stimmen,
+                    d.idbew,
+                    d.fkpartei,
+                    d.rowid,
+                    d.diff,
+                    rank() OVER (PARTITION BY p_1.id ORDER BY d.diff DESC) AS closest
+                   FROM parteien p_1
+                     JOIN diff d ON p_1.id = d.fkpartei
+                  WHERE d.diff < 0
+                  ORDER BY p_1.name, d.diff) a
+          WHERE a.closest <= 10
+        )
+ SELECT p.id,
+    p.name,
+    b.vorname,
+    b.nachname,
+    ranked.diff
+   FROM ( SELECT comb.partei_id,
+            comb.wk_id,
+            comb.bew_id,
+            comb.diff,
+            rank() OVER (PARTITION BY comb.partei_id ORDER BY comb.diff DESC) AS n
+           FROM ( SELECT cw.partei_id,
+                    cw.wk_id,
+                    cw.bew_id,
+                    cw.diff
+                   FROM closestwinners cw
+                UNION ALL
+                 SELECT cl.partei_id,
+                    cl.wk_id,
+                    cl.bew_id,
+                    cl.diff
+                   FROM closestlosers cl) comb) ranked
+     JOIN parteien p ON ranked.partei_id = p.id
+     JOIN bewerber b ON ranked.bew_id = b.id
+  WHERE ranked.n <= 10
+  ORDER BY p.name;
+
+ALTER TABLE public.closest2013
+  OWNER TO postgres;
+
+-- View: public.direktmandate2013
+
+-- DROP VIEW public.direktmandate2013;
+
+CREATE OR REPLACE VIEW public.direktmandate2013 AS 
+ SELECT ee.fkwahlkreis AS idwahlkreis,
+    b.id AS idbewerber,
+    p.id AS idpartei
+   FROM ( SELECT DISTINCT s.fkwahlkreis,
+            first_value(s.fkbewerber) OVER (PARTITION BY s.fkwahlkreis ORDER BY s.stimmen DESC) AS fkbewerber
+           FROM ergebnisseerst s
+          WHERE s.jahr = 2013) ee
+     LEFT JOIN bewerber b ON b.id = ee.fkbewerber
+     LEFT JOIN parteien p ON p.id = b.fkpartei;
+
+ALTER TABLE public.direktmandate2013
+  OWNER TO postgres;
+
+-- View: public.legaleparteien2013
+
+-- DROP VIEW public.legaleparteien2013;
+
+CREATE OR REPLACE VIEW public.legaleparteien2013 AS 
+ WITH zweitstimmen AS (
+         SELECT ez.fkpartei AS id,
+            sum(ez.stimmen) AS total
+           FROM ergebnissezweit ez
+          WHERE ez.jahr = 2013
+          GROUP BY ez.fkpartei
+        ), numdirektmandatebundesweit2013 AS (
+         SELECT dm.idpartei,
+            count(dm.idpartei) AS direktmandate
+           FROM direktmandate2013 dm
+          GROUP BY dm.idpartei
+        )
+ SELECT zs.id,
+    zs.total,
+    COALESCE(d.direktmandate, 0::bigint) AS direktmandate
+   FROM zweitstimmen zs
+     JOIN numdirektmandatebundesweit2013 d ON d.idpartei = zs.id
+  WHERE (zs.total::numeric / (( SELECT sum(a.total) AS sum
+           FROM zweitstimmen a))) >= 0.05 OR d.direktmandate >= 3;
+
+ALTER TABLE public.legaleparteien2013
+  OWNER TO postgres;
+
+-- View: public.minsitzeproland2013
+
+-- DROP VIEW public.minsitzeproland2013;
+
+CREATE OR REPLACE VIEW public.minsitzeproland2013 AS 
+ SELECT spl.bl_id,
+    spl.partei_id,
+    GREATEST(spl.sitze::bigint, count(dm.idpartei)) AS "greatest"
+   FROM public.generaterealsitzeproland2013() spl(bl_id, partei_id, sitze)
+     JOIN wahlkreise wk ON wk.fkbundesland = spl.bl_id
+     LEFT JOIN direktmandate2013 dm ON spl.partei_id = dm.idpartei AND wk.id = dm.idwahlkreis
+  GROUP BY spl.bl_id, spl.partei_id, spl.sitze;
+
+ALTER TABLE public.minsitzeproland2013
+  OWNER TO postgres;
+
+-- View: public.numdirektmandatebundesweit2013
+
+-- DROP VIEW public.numdirektmandatebundesweit2013;
+
+CREATE OR REPLACE VIEW public.numdirektmandatebundesweit2013 AS 
+ SELECT dm.idpartei AS id,
+    count(dm.idpartei) AS direktmandate,
+    2013 AS jahr
+   FROM direktmandate2013 dm
+  GROUP BY dm.idpartei;
+
+ALTER TABLE public.numdirektmandatebundesweit2013
+  OWNER TO postgres;
+
+-- View: public.parteimandateproland2013
+
+-- DROP VIEW public.parteimandateproland2013;
+
+CREATE OR REPLACE VIEW public.parteimandateproland2013 AS 
+ SELECT mandateproland2013.bl_id,
+    mandateproland2013.partei_id,
+    mandateproland2013.sitze
+   FROM public.mandateproland2013() mandateproland2013(bl_id, partei_id, sitze);
+
+ALTER TABLE public.parteimandateproland2013
+  OWNER TO postgres;
+
+-- View: public.resultmitgliederbt2013
+
+-- DROP VIEW public.resultmitgliederbt2013;
+
+CREATE OR REPLACE VIEW public.resultmitgliederbt2013 AS 
+ SELECT bundestag2013.id,
+    bundestag2013.nachname,
+    bundestag2013.vorname,
+    bundestag2013.name,
+    bundestag2013.text
+   FROM bundestag2013;
+
+ALTER TABLE public.resultmitgliederbt2013
+  OWNER TO postgres;
+
+-- View: public.resultsitzverteilung2013
+
+-- DROP VIEW public.resultsitzverteilung2013;
+
+CREATE OR REPLACE VIEW public.resultsitzverteilung2013 AS 
+ SELECT p.name,
+    b.round::bigint AS count
+   FROM btmandatepartei2013 b
+     JOIN parteien p ON b.partei_id = p.id
+  ORDER BY p.name;
+
+ALTER TABLE public.resultsitzverteilung2013
+  OWNER TO postgres;
+
+-- View: public.sitzeproland2013
+
+-- DROP VIEW public.sitzeproland2013;
+
+CREATE OR REPLACE VIEW public.sitzeproland2013 AS 
+ SELECT schritt01_2013.id,
+    schritt01_2013.mandat::numeric AS sitze
+   FROM public.schritt01_2013() schritt01_2013(id, mandat);
+
+ALTER TABLE public.sitzeproland2013
+  OWNER TO postgres;
+
+-- View: public.wahlkreissieger2013
+
+-- DROP VIEW public.wahlkreissieger2013;
+
+CREATE OR REPLACE VIEW public.wahlkreissieger2013 AS 
+ WITH reszweit AS (
+         SELECT p_1.name,
+            ez.fkwahlkreis
+           FROM ergebnissezweit ez,
+            parteien p_1
+          WHERE ez.jahr = 2013 AND ez.fkpartei = p_1.id AND ez.stimmen = (( SELECT max(sub.stimmen) AS max
+                   FROM ergebnissezweit sub
+                  WHERE ez.fkwahlkreis = sub.fkwahlkreis AND ez.jahr = sub.jahr))
+          GROUP BY p_1.name, ez.fkwahlkreis
+        )
+ SELECT wk.id,
+    wk.name,
+    p.name AS erst,
+    res.name AS zweit,
+    b.name AS bname
+   FROM direktmandate2013 dm,
+    parteien p,
+    wahlkreise wk,
+    reszweit res,
+    "bundesländer" b
+  WHERE dm.idpartei = p.id AND dm.idwahlkreis = wk.id AND res.fkwahlkreis = wk.id AND wk.fkbundesland = b.id;
+
+ALTER TABLE public.wahlkreissieger2013
+  OWNER TO postgres;
+
+-- View: public.zweitstimmenproland2013
+
+-- DROP VIEW public.zweitstimmenproland2013;
+
+CREATE OR REPLACE VIEW public.zweitstimmenproland2013 AS 
+ SELECT bl.id AS bl_id,
+    ez.fkpartei AS partei_id,
+    sum(ez.stimmen) AS stimmen
+   FROM ergebnissezweit ez,
+    "bundesländer" bl,
+    wahlkreise wk,
+    legaleparteien2013 lp
+  WHERE ez.jahr = 2013 AND ez.fkwahlkreis = wk.id AND wk.fkbundesland = bl.id AND ez.fkpartei = lp.id
+  GROUP BY ez.fkpartei, bl.id;
+
+ALTER TABLE public.zweitstimmenproland2013
+  OWNER TO postgres;
+
